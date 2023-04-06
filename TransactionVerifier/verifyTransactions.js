@@ -8,7 +8,7 @@ const checkPaymentStatus = async () => {
         const [result] =  await db_connection.query('select * from transactions where transactionStatus = "INITIATED"');
         await db_connection.query('unlock tables');
 
-        console.log(result);
+        //write code to send to payu and check
 
     }
     catch(err){

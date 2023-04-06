@@ -81,7 +81,7 @@ const PORT = 4000;
           cluster.fork();
         }
       
-        setInterval(checkPaymentStatus, 900000);
+        setInterval(checkPaymentStatus, 900000); // 15 minutes trigger in main thread
     }
 
     else{
