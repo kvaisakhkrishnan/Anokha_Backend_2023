@@ -506,8 +506,8 @@ module.exports = {
 
             let db_connection = await db.promise().getConnection();
             try{
-                await db_connection.query("lock tables starredevents read");
-                const [result] = await db_connection.query(`select * from starredevents where userEmail = ?`,[req.body.userEmail]);
+                await db_connection.query("lock tables AnokhaStarredEventsData read, eventData read, department read");
+                const [result] = await db_connection.query(`select * from AnokhaStarredEventsData where userEmail = ?`,[req.body.userEmail]);
                 await db_connection.query("unlock tables");
                 res.send(result);
             }
