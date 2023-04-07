@@ -74,7 +74,7 @@ const { param } = require('../routes/userApp');
     getUserDetails : [tokenValidator, async (req,res) => {
         if(req.authorization_tier == "ADMIN"){
 
-        if(req.params.userName == undefined)
+        if(req.body.userName == undefined)
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
@@ -82,7 +82,7 @@ const { param } = require('../routes/userApp');
          let sql_q = `select * from EventManager where userName = ?`;
          const db_connection = await db.promise().getConnection();
          try{
-            const [result] = await db_connection.query(sql_q, [req.params.userName]);
+            const [result] = await db_connection.query(sql_q, [req.body.userName]);
             if(result.length == 0)
             {
                 res.status(404).send({"error" : "no data found"});
@@ -116,14 +116,14 @@ const { param } = require('../routes/userApp');
         if(req.authorization_tier == "ADMIN"){
         var sql_q = "";
         parameters = []
-        if(req.body.eventDate == undefined && req.params.userName != undefined)
+        if(req.body.eventDate == undefined && req.body.userName != undefined)
         {
             sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?)`;
-            parameters = [req.params.userName]
+            parameters = [req.body.userName]
         }
-        else if (req.params.userName != undefined){
+        else if (req.body.userName != undefined){
             sql_q = `select * from EventData where userName = (select userEmail from eventManager where userName = ?) and date = ?`;
-            parameters = [req.params.userName,req.body.eventDate]
+            parameters = [req.body.userName,req.body.eventDate]
         }
         else{
             res.status(400).send({error : "We are one step ahead! Try harder!"});
