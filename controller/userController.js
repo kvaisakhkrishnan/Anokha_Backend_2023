@@ -529,15 +529,37 @@ module.exports = {
 
 
 
-    getCrewDetails : [tokenValidator,
+    getCrewDetails : [
        async (req,res) => {
             let db_connection = await db.promise().getConnection();
             await db_connection.query("lock tables AnokhaCrewCompleteData read, userdata read, collegedata read");
-            let sql_q = `select * from AnokhaCrewCompleteData`;
+            let sql_q = `select * from AnokhaCrewCompleteData order by teamId`;
             await db_connection.query("unlock tables");
+            var jsonResponse = [];
             try{
-            const [result] = await db_connection.query(sql_q);
-            res.status(200).send(result);
+            const [results] = await db_connection.query(sql_q);
+            var crewByTeam = {};  
+                    var teamName = "";
+                    results.forEach(crewMember => {
+                        if(crewMember.teamName == teamName)
+                        {
+                            crewByTeam["events"].push(crewByTeam);
+                        }
+                        else
+                        {
+                            if(teamName != "")
+                            {
+                                jsonResponse.push(crewByTeam);
+                            }
+                            crewByTeam = {
+                                teamName : crewMember.teamName,
+                                member : [crewMember]
+                            }
+                            teamName = crewMember.departmentAbbr;
+    
+                        }
+                    });
+                    res.status(200).send(jsonResponse);
             }
             catch(err)
             {
