@@ -511,7 +511,7 @@ module.exports = {
                 await db_connection.query("unlock tables");
                 res.send(result);
             }
-            catch{
+            catch(err){
                 const now = new Date();
                 now.setUTCHours(now.getUTCHours() + 5);
                 now.setUTCMinutes(now.getUTCMinutes() + 30);
