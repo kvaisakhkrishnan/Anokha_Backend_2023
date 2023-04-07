@@ -32,6 +32,9 @@ router.post('/resetPass',userWebController.resetPass);
 //update user details
 router.post('/editUser',userWebController.editUserDetails)
 
+//get all colleges
+router.get('/getAllColleges',userWebController.getAllColleges);
+
 module.exports = router;
 
 
