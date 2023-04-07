@@ -16,65 +16,6 @@ module.exports = {
 
 
 
-    getEventsByDepartment : [ tokenValidator,async (req, res) => {
-
-        const db_connection = await db.promise().getConnection();
-        try{
-            let sql_q = "select * from AnokhaEventsAndDepartments order by departmentAbbr";
-            await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read');
-            const [results] = await db_connection.query(sql_q);
-            await db_connection.query('unlock tables');
-            var jsonResponse = [];
-           if(results.length != 0)
-           {
-                    var eventsByDepartment = {};  
-                    var department = "";
-                    results.forEach(eventData => {
-                        if(eventData.departmentAbbr == department)
-                        {
-                           eventsByDepartment["events"].push(eventData);
-                        }
-                        else
-                        {
-                            if(department != "")
-                            {
-                                jsonResponse.push(eventsByDepartment);
-                            }
-                            eventsByDepartment = {
-                                department : eventData.departmentName,
-                                events : [eventData]
-                            }
-                            department = eventData.departmentAbbr;
-    
-                        }
-                    });
-           }
-           res.status(200).send(jsonResponse);
-
-            
-        }
-
-        catch (err) {
-            const now = new Date();
-            now.setUTCHours(now.getUTCHours() + 5);
-            now.setUTCMinutes(now.getUTCMinutes() + 30);
-            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
-          } finally {
-            db_connection.release();
-          }
-
-        
-        
-    }],
-
-
-
-
-
-
     getUserDetails : [tokenValidator, async (req, res) => {
         if(req.body.userEmail != undefined &&
             validator.isEmail(req.body.userEmail))
@@ -173,33 +114,68 @@ module.exports = {
             
             let sql_q = `select * from AnokhaCompleteUserData where userEmail = ? and password = ?`;
             await db_connection.query("lock tables AnokhaCompleteUserData read, UserData read, CollegeData read")
-            const [result] = await db_connection.query(sql_q, [req.body.userEmail, req.body.password]);
+            const [result1] = await db_connection.query(sql_q, [req.body.userEmail, req.body.password]);
             await db_connection.query('unlock tables');
-            if(result.length == 0)
+            let sql_q2 = `select * from AnokhaEventsAndDepartments order by departmentAbbr`;
+            await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read');
+            const [results] = await db_connection.query(sql_q2);
+            await db_connection.query('unlock tables');
+            var jsonResponse = [];
+           if(results.length != 0)
+           {
+                    var eventsByDepartment = {};  
+                    var department = "";
+                    results.forEach(eventData => {
+                        if(eventData.departmentAbbr == department)
+                        {
+                           eventsByDepartment["events"].push(eventData);
+                        }
+                        else
+                        {
+                            if(department != "")
+                            {
+                                jsonResponse.push(eventsByDepartment);
+                            }
+                            eventsByDepartment = {
+                                department : eventData.departmentName,
+                                events : [eventData]
+                            }
+                            department = eventData.departmentAbbr;
+    
+                        }
+                    });
+           }
+          
+
+
+
+            if(result1.length == 0)
             {
                 res.status(404).send({error : "User not found"});
             }
             else{
 
                 const token = await tokenGenerator({
-                    userEmail : result[0].userEmail,
-                    fullName : result[0].fullName,
-                    collegeName : result[0].collegeName,
-                    district : result[0].district,
-                    country : result[0].country,
+                    userEmail : result1[0].userEmail,
+                    fullName : result1[0].fullName,
+                    collegeName : result1[0].collegeName,
+                    district : result1[0].district,
+                    country : result1[0].country,
                     role : "USER"
                 });
-                res.json({
+                res.json({"userData" : {
                     
-                        userEmail : result[0].userEmail,
-                        fullName : result[0].fullName,
-                        activePassport : result[0].activePassport,
-                        isAmritaCBE : result[0].isAmritaCBE,
-                        collegeName : result[0].collegeName,
-                        district : result[0].district,
-                        state : result[0].state,
-                        country : result[0].country,
+                        userEmail : result1[0].userEmail,
+                        fullName : result1[0].fullName,
+                        activePassport : result1[0].activePassport,
+                        isAmritaCBE : result1[0].isAmritaCBE,
+                        collegeName : result1[0].collegeName,
+                        district : result1[0].district,
+                        state : result1[0].state,
+                        country : result1[0].country,
                         SECRET_TOKEN : token
+                },
+                "events" : jsonResponse
                     
                 });
             
