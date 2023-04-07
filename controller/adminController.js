@@ -251,7 +251,7 @@ const { param } = require('../routes/userApp');
                 else{
 
                     const token = await tokenGenerator({
-                        userName : result.userName,
+                        userName : req.body.userName,
                         userEmail : result.userEmail,
                         name : result.name,
                         managerPhoneNumber : result.phoneNumber,
