@@ -76,15 +76,15 @@ module.exports = {
 
 
     getUserDetails : [tokenValidator, async (req, res) => {
-        if(req.params.userEmail != undefined &&
-            validator.isEmail(req.params.userEmail))
+        if(req.body.userEmail != undefined &&
+            validator.isEmail(req.body.userEmail))
          {
 
         const db_connection = await db.promise().getConnection();
         try{
             await db_connection.query("lock tables userdata read, AnokhaUserData read");
             let sql_q = "select * from AnokhaUserData where userEmail = ?";
-            const [results] = await db_connection.query(sql_q, req.params.userEmail);
+            const [results] = await db_connection.query(sql_q, req.body.userEmail);
             await db_connection.query('unlock tables');
             res.status(200).send(results);
         }
@@ -300,7 +300,9 @@ module.exports = {
                                
                         const token = await otpTokenGenerator({
                                     userEmail : req.body.userEmail,
-                                    password : req.body.password
+                                    fullName : req.body.fullName,
+                                    collegeId : req.body.collegeId
+                                    
                         });
                                 
                         mailer (req.body.fullName, req.body.userEmail, otpGenerated);
@@ -493,8 +495,8 @@ module.exports = {
 
     getStarredEvents : [tokenValidator, async (req, res) => {
 
-        if(req.params.userEmail == undefined ||
-            !validator.isEmail(req.params.userEmail))
+        if(req.body.userEmail == undefined ||
+            !validator.isEmail(req.body.userEmail))
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
             return;
@@ -505,7 +507,7 @@ module.exports = {
             let db_connection = await db.promise().getConnection();
             try{
                 await db_connection.query("lock tables starredevents read");
-                const [result] = await db_connection.query(`select * from AnokhaStarredEventsData where userEmail = ?`,[req.params.userEmail]);
+                const [result] = await db_connection.query(`select * from AnokhaStarredEventsData where userEmail = ?`,[req.body.userEmail]);
                 await db_connection.query("unlock tables");
                 res.send(result);
             }

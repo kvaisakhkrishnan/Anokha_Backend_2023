@@ -16,7 +16,7 @@ async function tokenValidator(req, res, next){
         if(payload["secret_key"] == secret_key)
         {
             req.authorization_tier = payload["role"];
-            req.userEmail = payload["userEmail"];
+            req.body.userEmail = payload["userEmail"];
             next();
             return;
         }
