@@ -560,8 +560,8 @@ module.exports = {
     getAllEvents : [tokenValidator, async (req, res) => {
         let db_connection = await db.promise().getConnection();
         try{
-            await db_connection.query("lock tables AnokhaEventData read, eventdata read");
-            const [result] = await db_connection.query(`select * from AnokhaEventData`);
+            await db_connection.query("lock tables eventData read");
+            const [result] = await db_connection.query(`select * from eventData`);
             await db_connection.query("unlock tables");
             res.status(200).send(result);
         }
