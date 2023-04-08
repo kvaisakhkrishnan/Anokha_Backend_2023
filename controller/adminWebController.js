@@ -61,5 +61,413 @@ module.exports = {
             }
         
     }
+    },
+
+    createEvent : [webtokenValidator, async  (req, res) => {
+            
+        if(req.body.eventName == undefined ||
+            req.body.eventOrWorkshop == undefined ||
+            req.body.description == undefined ||
+            req.body.userEmail == undefined ||
+            req.body.date == undefined ||
+            req.body.eventTime == undefined ||
+            req.body.venue == undefined ||
+            req.body.fees == undefined ||
+            req.body.totalNumberOfSeats == undefined ||
+            req.body.departmentAbbr == undefined ||
+            req.body.refundable == undefined ||
+            req.body.groupOrIndividual == undefined ||
+            req.body.maxCount == undefined ||
+            req.body.technical == undefined
+        )
+        {
+           
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+        }
+        else if(req.body.groupOrIndividual == 0 && req.body.maxCount != 0)
+        {
+            res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
+        }
+        else{
+            
+            const db_connection = await db.promise().getConnection();
+            try{
+                const lockName = "CREATEVENT";
+                const lockTimeout = 10;
+                await db_connection.query(`SELECT GET_LOCK(?,?)`, [lockName, lockTimeout]);
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                let sql_q = `insert into EventData (eventName, eventOrWorkshop,technical, groupOrIndividual, maxCount, description, url, userEmail, date, eventTime, venue, fees, totalNumberOfSeats, noOfRegistrations, timeStamp, refundable, departmentAbbr) values (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
+                const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.noOfRegistrations,istTime,req.body.refundable,req.body.departmentAbbr]);
+                await db_connection.query(`SELECT RELEASE_LOCK(?)`, [lockName]);
+                res.status(201).send({result : "Data Inserted Succesfully"});
+            }
+        
+            catch(err)
+            {
+                console.log(err);
+                if(err.errno = 1452)
+                {
+
+                    res.status(400).send({error : "Foreign Key Constraint Error"});
+                }
+                else{
+                    const now = new Date();
+                    now.setUTCHours(now.getUTCHours() + 5);
+                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                    fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                    fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                    res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                }
+            }
+           finally{
+            await db_connection.release();
+           }
+        }
+     }],
+
+     getUserDetails : [webtokenValidator, async (req,res) => {
+        if(req.authorization_tier == "ADMIN"){
+
+        if(req.body.userName == undefined)
+        {
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+        }
+        else{
+         let sql_q = `select * from EventManager where userName = ?`;
+         const db_connection = await db.promise().getConnection();
+         try{
+            const [result] = await db_connection.query(sql_q, [req.body.userName]);
+            if(result.length == 0)
+            {
+                res.status(404).send({"error" : "no data found"});
+            }
+            else{
+                res.status(200).send({
+                    userName: result[0].userName,
+                    userEmail:  result[0].userEmail,
+                    name:  result[0].name,
+                    phoneNumber:  result[0].phoneNumber,
+                    role:  result[0].role
+                });
+            }
+         }
+         catch(err)
+         {
+            const now = new Date();
+            now.setUTCHours(now.getUTCHours() + 5);
+            now.setUTCMinutes(now.getUTCMinutes() + 30);
+            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+         }
+         finally{
+            await db_connection.release();
+         }
+        }
+    }else{
+        res.status(401).send({"error" : "You have no rights to be here!"})
     }
+     }],
+
+     
+     getEventDetails : [webtokenValidator, async(req, res) => {
+        if(req.authorization_tier == "ADMIN"){
+        var sql_q = "";
+        parameters = []
+        if(req.body.eventDate == undefined && req.body.userName != undefined)
+        {
+            sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?)`;
+            parameters = [req.body.userName]
+        }
+        else if (req.body.userName != undefined){
+            sql_q = `select * from EventData where userName = (select userEmail from eventManager where userName = ?) and date = ?`;
+            parameters = [req.body.userName,req.body.eventDate]
+        }
+        else{
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+        }
+       
+        const db_connection = await db.promise().getConnection();
+        try{
+            const [result] = await db_connection.query(sql_q, parameters);
+            if(result.length == 0)
+            {
+                res.status(404).send({"error" : "no data found"});
+            }
+            else{
+                res.status(200).send(result);
+            }
+        }
+        catch(err)
+         {
+            console.log(err);
+            const now = new Date();
+            now.setUTCHours(now.getUTCHours() + 5);
+            now.setUTCMinutes(now.getUTCMinutes() + 30);
+            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+         }
+         finally{
+            await db_connection.release();
+         }
+        }
+        else{
+            res.status(401).send({"error" : "You have no rights to be here!"})
+        }
+
+        
+     }],
+     registeredUsers : [webtokenValidator, async (req,res) => {
+
+        if(req.params.eventId == undefined)
+
+        {
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+        }
+        else{
+        let sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId = ?);`
+
+        const db_connection = await db.promise().getConnection();
+        try{
+            const [result] = await db_connection.query(sql, [req.params.eventId]);
+            res.status(200).send(result);
+        }
+        catch(err)
+        {
+            const now = new Date();
+            now.setUTCHours(now.getUTCHours() + 5);
+            now.setUTCMinutes(now.getUTCMinutes() + 30);
+            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+        }
+        finally{
+            await db_connection.release();
+        }
+        
+           
+    
+    }
+    }],
+
+    updateEventData : [webtokenValidator,  async (req, res) => {
+        if(req.body.eventName == undefined ||
+            req.body.eventOrWorkshop == undefined ||
+            req.body.description == undefined ||
+            req.body.userName == undefined ||
+            req.body.eventDate == undefined ||
+            req.body.eventTime == undefined ||
+            req.body.venue == undefined ||
+            req.body.fees == undefined ||
+            req.body.totalNumberOfSeats == undefined ||
+            req.body.departmentAbbr == undefined ||
+            req.body.refundable == undefined ||
+            req.body.eventId == undefined ||
+            validator.isEmpty(req.body.eventName) ||
+        validator.isEmpty(req.body.description) ||
+        validator.isEmpty(req.body.eventDate) ||
+        validator.isEmpty(req.body.eventTime) ||
+        validator.isEmpty(req.body.venue) ||
+        validator.isEmpty(req.body.departmentAbbr) ||
+        req.body.groupOrIndividual == undefined ||
+        req.body.maxCount == undefined
+        )
+        {
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+        }
+        else if(req.body.groupOrIndividual == 0 && req.body.maxCount != 0)
+        {
+            res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
+        }
+        else{
+            const db_connection = await db.promise().getConnection();
+            try{
+                const [result] = db.query(`update EventData set eventName = ?, groupOrIndividual = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userName = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userName]);
+                if(result.affectedRows == 0)
+                {
+                    res.status(400).send({"error" : "Error in data"});
+                }
+                else{
+                res.status(200).send({result : "Updated Succesfully"});
+                }}
+
+           
+            catch(err)
+            {
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                res.status(500).send({error : "Query Error"})
+            }
+            finally{
+                await db_connection.release();
+            }
+        
+    }
+    }],
+
+    getAllEvents : [webtokenValidator, async (req, res) => {
+        let db_connection = await db.promise().getConnection();
+        try{
+            const [result] = await db_connection.query(`select * from EventData`);
+            res.status(200).send(result);
+        }
+        catch(err)
+        {
+            console.log(err);
+            const now = new Date();
+            now.setUTCHours(now.getUTCHours() + 5);
+            now.setUTCMinutes(now.getUTCMinutes() + 30);
+            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+    
+        }
+        finally{
+            await db_connection.release();
+        }
+    }],
+
+    getEventsByDept : [
+        webtokenValidator,
+        async (req,res) => {
+            let db_connection = await db.promise().getConnection();
+            try{
+                const [result] = await db_connection.query(`select * from EventData where departmentAbbr = ?`,[req.params.dept]);
+                res.status(200).send(result);
+            }
+    
+            catch(err) {
+                console.log(err);
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+            }
+        }
+    ],
+
+    getEventsByDate : [
+        webtokenValidator,
+        async (req,res) => {
+            
+            let db_connection = await db.promise().getConnection();
+            try{
+                
+                const [result] = await db_connection.query(`select * from EventData where date = ?`,[req.params.date]);
+                res.status(200).send(result);
+            }
+    
+            catch(err) {
+                console.log(err);
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+            }
+    
+    
+        }
+    ],
+
+    getTotalFee : [
+        webtokenValidator,
+        async (req,res) => {
+            if(req.body.eventName == undefined && req.body.dept == undefined) {
+                res.send("No data passed in body to post")
+            }
+            else {
+            let db_connection = await db.promise().getConnection();
+            try {
+                await db_connection.query("lock tables eventData read");
+    
+                let command = "";
+                if(req.body.dept == undefined) {
+                    command = `select sum(fees) as EVENT_SUM from eventdata group by eventName having eventName = ?`;
+                }
+    
+                else if(req.body.eventName == undefined) {
+                    command = `select sum(fees) as DEPT_SUM from eventdata group by departmentAbbr having departmentAbbr = ?`;
+                }
+    
+                let parameter = (req.body.eventName == undefined)? [req.body.dept] : [req.body.eventName];
+                const [result] = await db_connection.query(command,parameter)
+                await db_connection.query("unlock tables");
+                res.status(200).send(result);
+    
+            }
+            catch(err) {
+                console.log(err);
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+            }
+        }
+        }
+    ],
+
+    getTotalRegs : [
+        webtokenValidator,
+        async (req,res) => {
+    
+            if(req.body.eventName == undefined && req.body.dept == undefined) {
+                res.send("No data sent in post")
+            }
+            else {
+            let db_connection = await db.promise().getConnection();
+            try {
+                await db_connection.query("lock tables eventData read");
+                let command = "";
+                if(req.body.dept == undefined) {
+                    command = `select noOfRegistrations from eventdata where eventName = ?`;
+                }
+                else if(req.body.evetName == undefined) {
+                    command = `select sum(noOfRegistrations) as DEPT_REGISTRATIONS from eventdata group by departmentAbbr having departmentAbbr = ?`
+                }
+                let parameter = (req.body.dept == undefined) ? [req.body.eventName] : [req.body.dept];
+    
+                const [result] = await db_connection.query(command,parameter);
+                await db_connection.query("unlock tables")
+    
+                res.status(200).send(result);
+                
+    
+            }
+    
+            catch(err) {
+                console.log(err);
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+            }
+            }
+        }
+    ]
+
 }
