@@ -207,7 +207,6 @@ const { param } = require('../routes/userApp');
                 now.setUTCHours(now.getUTCHours() + 5);
                 now.setUTCMinutes(now.getUTCMinutes() + 30);
                 const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                console.log(istTime);
                 let sql_q = `insert into EventData (eventName, eventOrWorkshop,technical, groupOrIndividual, maxCount, description, url, userEmail, date, eventTime, venue, fees, totalNumberOfSeats, noOfRegistrations, timeStamp, refundable, departmentAbbr) values (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
                 const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.noOfRegistrations,istTime,req.body.refundable,req.body.departmentAbbr]);
                 await db_connection.query(`SELECT RELEASE_LOCK(?)`, [lockName]);

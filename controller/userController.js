@@ -8,6 +8,7 @@ const mailer = require('../Mailer/otpGenerator');
 const welcomeMailer = require('../Mailer/welcomeMailer');
 const validator = require('validator');
 const fs = require('fs');
+const crypto = require('crypto');
 const request = require('request');
 const transactionTokenGenerator = require('../middleware/transactionTokenGenerator');
 const transactionTokenVerifier = require('../middleware/transactionTokenVerifier');
@@ -588,7 +589,7 @@ module.exports = {
 
 
 
-    moveToTransaction : [async (req, res) => {
+    moveToTransaction : [tokenValidator, async (req, res) => {
         const tokenHeader = req.headers.authorization;
         const token = tokenHeader && tokenHeader.split(' ')[1];
         if(token == null)
@@ -620,6 +621,7 @@ module.exports = {
 
         if(
             req.body.productId == undefined ||
+            (req.body.productId[0] !="E" && req.body.productId[0] !="P") ||
             req.body.firstName == undefined ||
             req.body.userEmail == undefined ||
             !validator.isEmail(req.body.userEmail) ||
@@ -638,34 +640,41 @@ module.exports = {
             }
             else{
 
+                
+                
                 var hashedData;
                 var txid;
-                const db_connection = await db.promise().getConnection();
+                var amount;
+                var productinfo;
+                if(req.body.productId[0] == "E")
+                {
+                    const db_connection = await db.promise().getConnection();
                 try{
                     await db_connection.query("lock tables eventData read");
-                    const [result] = await db_connection.query("select * from eventData where eventId = ?", [req.body.productId]);
+                    const [result] = await db_connection.query("select * from eventData where eventId = ?", [req.body.productId.substring(1,req.body.productId.length)]);
                     await db_connection.query("unlock tables");
-                    if(request.length == 0)
+                  
+                    if(result.length == 0)
                     {
-                        res.send(400).send({"error" : "We are much ahead of you..."});
+                        
+                        res.status(400).send({"error" : "We are much ahead of you..."});
                         return;
                     }
                     else{
                         txid = "ANOKHA2023" + new Date().getTime();
-                        const amount = result.fees;
+                        amount = result[0].fees;
                         const key = "Pz9v2c";
                         const salt = "TbxC2ph02lBUbVYwx0fIB50CvqL27pHo";
-                        const productinfo = req.body.productId;
+                        productinfo = req.body.productId;
                         const firstName = req.body.firstName;
                         const userEmail = req.body.userEmail;
                         const phoneNumber = req.body.phoneNumber;
                         const callbackurl = "http://52.66.236.118:3000/userApp/data";
-                        const text = key + "|" + txid + "|" + amount + "|" + productinfo + "|" + firstName + "|" + userEmail + "|||||||||||" + salt;
+                        const text = key + "|" + txid + "|" + amount + "|" + req.body.productId.substring(1,req.body.productId.length) + "|" + firstName + "|" + userEmail + "|||||||||||" + salt;
                         const hash = crypto.createHash('sha512');
                         hash.update(text);
                         hashedData = hash.digest('hex');
 
-                        res.send("hash generated")
                         
                     }
                     
@@ -684,14 +693,45 @@ module.exports = {
                     await db_connection.release();
                 }
 
+                }
+                else{
+                        txid = "ANOKHA2023" + new Date().getTime();
+                        amount = 500;
+                        const key = "Pz9v2c";
+                        const salt = "TbxC2ph02lBUbVYwx0fIB50CvqL27pHo";
+                        productinfo = "PASSPORT";
+                        const firstName = req.body.firstName;
+                        const userEmail = req.body.userEmail;
+                        const phoneNumber = req.body.phoneNumber;
+                        const callbackurl = "http://52.66.236.118:3000/userApp/data";
+                        const text = key + "|" + txid + "|" + amount + "|" + productinfo + "|" + firstName + "|" + userEmail + "|||||||||||" + salt;
+                        const hash = crypto.createHash('sha512');
+                        hash.update(text);
+                        hashedData = hash.digest('hex');
+
+                }
                 const transaction_db_connection = await transactions_db.promise().getConnection(); 
                 try{
                       
-                    
+                    const now = new Date();
+                    now.setUTCHours(now.getUTCHours() + 5);
+                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                     await transaction_db_connection.query("lock tables transactions write");
-                    await transaction_db_connection.query("insert into transactions values ", [req.body.eventId]);
-                    await transaction_db_connection.query("unlock tables");
+                    if(req.body.productId[0] == "E")
+                    {
+                        await transaction_db_connection.query("insert into transactions (transactionId, productId, userEmail, senderName, eventIdOrPassportId, amount, timeStamp, transactionStatus, address, city, state, zipcode, country, phoneNumber) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [txid, req.body.productId.substring(2,req.body.productId.length), req.body.userEmail, req.body.firstName,'EVENT' , amount, istTime, 'INITIATED', req.body.address, req.body.city, req.body.state, req.body.zipcode, req.body.country, req.body.phoneNumber]);
 
+                    }
+                    else{
+                        await transaction_db_connection.query("insert into transactions (transactionId, productId, userEmail, senderName, eventIdOrPassportId, amount, timeStamp, transactionStatus, address, city, state, zipcode, country, phoneNumber) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [txid, productinfo, req.body.userEmail, req.body.firstName, 'PASSPORT', amount, istTime, 'INITIATED', req.body.address, req.body.city, req.body.state, req.body.zipcode, req.body.country, req.body.phoneNumber]);
+
+                    }
+                    await transaction_db_connection.query("unlock tables");
+                    res.status(201).send({
+                        "txid" : txid,
+                        "hash" : hashedData
+                    })
 
                 }
                 catch(err)
@@ -708,10 +748,7 @@ module.exports = {
                     await transaction_db_connection.release();
                 }
 
-                res.status(201).send({
-                    "txid" : txid,
-                    "hash" : hashedData
-                })
+                
            
             }
 
