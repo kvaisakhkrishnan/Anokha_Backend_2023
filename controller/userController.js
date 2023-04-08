@@ -674,6 +674,7 @@ module.exports = {
                         hash.update(text);
                         hashedData = hash.digest('hex');
 
+                        res.send("hash generated")
                         
                     }
                     
