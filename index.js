@@ -27,7 +27,7 @@ const PORT = 3000;
 
     server.use(helmet())
     server.use(express.json());
-    server.use(cors());
+    //server.use(cors());
     
     
      //Routes
