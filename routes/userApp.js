@@ -15,7 +15,7 @@ router.get('/events/all', userController.getAllEvents);
 router.post('/transaction/moveToTransaction', userController.moveToTransaction);
 
 
-router.post('transaction/initiateTransaction', userController.intiatePay);
+router.post('/transaction/initiateTransaction', userController.intiatePay);
 
 
 
