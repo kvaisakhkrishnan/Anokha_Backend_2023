@@ -16,7 +16,9 @@ module.exports = {
     getAllEvents :  async (req, res) => {
         let db_connection = await db.promise().getConnection();
         try{
-            const [result] = await db_connection.query(`select * from EventData`);
+            await db_connection.query("lock tables eventData read");
+            const [result] = await db_connection.query(`select * from eventData`);
+            await db_connection.query("unlock tables");
             res.status(200).send(result);
         }
         catch(err)
@@ -35,106 +37,123 @@ module.exports = {
         }
     },
 
-
-    userLogin : async (req,res) => {
-        
+    userLogin : async (req, res) => {
         if(req.body.userEmail != undefined && req.body.password != undefined && !validator.isEmpty(req.body.userEmail) && !validator.isEmpty(req.body.password) && validator.isEmail(req.body.userEmail)){
         
-            let db_connection = await db.promise().getConnection();
-            try{
-                
-                let sql_q = `select * from AnokhaCompleteUserData where userEmail = ? and password = ?`;
-                const [result] = await db_connection.query(sql_q, [req.body.userEmail, req.body.password]);
-                if(result.length == 0)
-                {
-                    res.status(404).send({error : "User not found"});
-                    return;
+        let db_connection = await db.promise().getConnection();
+        try{
+            
+            let sql_q = `select * from AnokhaCompleteUserData where userEmail = ? and password = ?`;
+            await db_connection.query("lock tables AnokhaCompleteUserData read, UserData read, CollegeData read")
+            const [result1] = await db_connection.query(sql_q, [req.body.userEmail, req.body.password]);
+            await db_connection.query('unlock tables');
+            let sql_q2 = `select * from AnokhaEventsAndDepartments order by departmentAbbr`;
+            await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read');
+            const [results] = await db_connection.query(sql_q2);
+            await db_connection.query('unlock tables');
+            var jsonResponse = [];
+            console.log(results);
+            if (results.length !== 0) {
+                var eventsByDepartment = {};
+                var department = "";
+                for (const eventData of results) {
+                  if (eventData.departmentAbbr === department) {
+                    eventsByDepartment.events.push(eventData);
+                  } else {
+                    if (department !== "") {
+                      jsonResponse.push(eventsByDepartment);
+                    }
+                    eventsByDepartment = {
+                      department: eventData.departmentName,
+                      events: [eventData]
+                    };
+                    department = eventData.departmentAbbr;
+                  }
                 }
-                else{
-    
-                    const token = await webtokenGenerator({
-                        userEmail : result[0].userEmail,
-                        fullName : result[0].fullName,
-                        collegeName : result[0].collegeName,
-                        district : result[0].district,
-                        country : result[0].country,
-                        role : "USER"
-                    });
-                    res.json({
-                        
-                            userEmail : result[0].userEmail,
-                            fullName : result[0].fullName,
-                            activePassport : result[0].activePassport,
-                            isAmritaCBE : result[0].isAmritaCBE,
-                            collegeName : result[0].collegeName,
-                            district : result[0].district,
-                            state : result[0].state,
-                            country : result[0].country,
-                            SECRET_TOKEN : token
-                        
-                    });
-                
+                if (department !== "") {
+                  jsonResponse.push(eventsByDepartment);
                 }
-            }
-            catch(err)
-            {
-                console.log(err);
-                const now = new Date();
-                now.setUTCHours(now.getUTCHours() + 5);
-                now.setUTCMinutes(now.getUTCMinutes() + 30);
-                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
-            }
-            finally 
-            {
-                db_connection.release();
-            }   
-            }
-            else
-            {
-                res.status(400).send({error : "We are one step ahead! Try harder!"});
-                return;
-            }
-    },
+              }
+              
+          
 
-    registerUser : async (req,res) => {
-        if(
-            req.body.userEmail == undefined ||
-            req.body.password == undefined ||
-            req.body.fullName == undefined ||
-            req.body.collegeId == undefined ||
-            req.body.userEmail == undefined ||
-            validator.isEmpty(req.body.userEmail)||
-        validator.isEmpty(req.body.fullName)||
-        validator.isEmpty(req.body.password)||
-        validator.isEmpty(req.body.collegeId) ||
-        !validator.isEmail(req.body.userEmail) 
-       )
-        
+
+
+            if(result1.length == 0)
+            {
+                res.status(404).send({error : "User not found"});
+            }
+            else{
+
+                const token = await webtokenGenerator({
+                    userEmail : result1[0].userEmail,
+                    fullName : result1[0].fullName,
+                    collegeName : result1[0].collegeName,
+                    district : result1[0].district,
+                    country : result1[0].country,
+                    role : "USER"
+                });
+                res.json({"userData" : {
+                    
+                        userEmail : result1[0].userEmail,
+                        fullName : result1[0].fullName,
+                        activePassport : result1[0].activePassport,
+                        isAmritaCBE : result1[0].isAmritaCBE,
+                        collegeName : result1[0].collegeName,
+                        district : result1[0].district,
+                        state : result1[0].state,
+                        country : result1[0].country,
+                        SECRET_TOKEN : token
+                },
+                "events" : jsonResponse
+                    
+                });
+            
+            }
+        }
+        catch(err)
+        {
+            const now = new Date();
+            now.setUTCHours(now.getUTCHours() + 5);
+            now.setUTCMinutes(now.getUTCMinutes() + 30);
+            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+        }
+        finally 
+        {
+            db_connection.release();
+        }   
+        }
+        else
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
             return;
         }
+    },
 
-        else{
-            db.beginTransaction()
+    registerUser : async (req, res) =>{
 
-            db.query(`select * from AnokhaUserData where userEmail = ?`,[req.body.userEmail], (err, result) =>{
-                if(err)
-                {
-                    db.rollback()
-                    const now = new Date();
-                    now.setUTCHours(now.getUTCHours() + 5);
-                     now.setUTCMinutes(now.getUTCMinutes() + 30);
-                     const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                    fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-                    fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                    res.status(500).send({error : "Query Error... Contact DB Admin"});
-                }
-                else{
-                    db.commit()
+
+        if(req.body.userEmail == undefined ||
+            req.body.fullName == undefined ||
+            req.body.password == undefined ||
+            req.body.collegeId == undefined ||
+            !validator.isEmail(req.body.userEmail))
+            
+            {
+                res.status(400).send({error : "We are one step ahead! Try harder!"});
+                return;
+            }
+
+            else{
+               
+                const db_connection = await db.promise().getConnection();
+                try{
+                    await db_connection.query("lock tables AnokhaUserData read, userData read");
+                    const [result] = await db_connection.query("select * from AnokhaUserData where userEmail = ?",[req.body.userEmail] );
+                    await db_connection.query("unlock tables");
                     if(result.length != 0)
                     {
                         res.status(409).send({"error" : "user already exists..."});
@@ -142,7 +161,7 @@ module.exports = {
                     }
                     else{
 
-                        if(req.body.collegeId == 1)
+                        if(req.body.collegeId == 633 || req.body.collegeId == 638 || req.body.collegeId == 641 || req.body.collegeId == 645)
                         {
                             if(req.body.userEmail.includes("@cb.amrita.edu") || req.body.userEmail.includes("@cb.students.amrita.edu"))
                             {
@@ -164,66 +183,76 @@ module.exports = {
                             //Need tp verify credibility of email given
                             
                         }
+                        var currentStatus = 0;
                         var isAmrita = 0;
-                        if(req.body.collegeId == 1)
+                        if(req.body.collegeId == 633 || req.body.collegeId == 638 || req.body.collegeId == 645)
                         {
                             isAmrita = 1;
+                            currentStatus = 1;
                         }
+
                         const otpGenerated = randonNumberGenerator();
                         const now = new Date();
                         now.setUTCHours(now.getUTCHours() + 5);
                         now.setUTCMinutes(now.getUTCMinutes() + 30);
                         const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
 
-                        db.beginTransaction()
-                        db.query(`delete from OTP where userEmail = ?`,[req.body.userEmail], (err, res) => {});
-                        db.query(`insert into OTP (userEmail, otp, fullName, password, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[req.body.userEmail,otpGenerated,req.body.fullName,req.body.password,req.body.currentStatus,0,isAmrita,req.body.collegeId,istTime,null,null], async (err, result)=> {
-                            if(err)
-                            {
-                                db.rollback()
-                                
-                                const now = new Date();
-                                now.setUTCHours(now.getUTCHours() + 5);
-                                now.setUTCMinutes(now.getUTCMinutes() + 30);
-                                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-                                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                                res.status(500).send({error : "Query Error... Contact DB Admin"});
-                            }
-                            else{
-                                db.commit()
-                                const token = await otpTokenGenerator({
+                        await db_connection.query("lock tables otp write");
+                        await db_connection.query(`delete from OTP where userEmail = ?`,[req.body.userEmail]);
+                        await db_connection.query(`insert into OTP (userEmail, otp, fullName, password, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[req.body.userEmail,otpGenerated,req.body.fullName,req.body.password,currentStatus,0,isAmrita,req.body.collegeId,istTime,null,null]);
+                        await db_connection.query("unlock tables");
+                               
+                        const token = await otpTokenGenerator({
                                     userEmail : req.body.userEmail,
-                                    password : req.body.password
-                                });
-                                //sending OTP to user
-                                mailer(req.body.fullName, req.body.userEmail, otpGenerated);
-                                res.status(200).send({SECRET_TOKEN : token});
-                            }
+                                    fullName : req.body.fullName,
+                                    collegeId : req.body.collegeId
+                                    
                         });
+                                
+                        mailer (req.body.fullName, req.body.userEmail, otpGenerated);
+                        res.status(200).send({SECRET_TOKEN : token});
+                        }
+                        
 
 
 
                     }
-                }
-            })
 
-   
-    
-}
+
+                
+                catch(err)
+                {
+                        const now = new Date();
+                        now.setUTCHours(now.getUTCHours() + 5);
+                         now.setUTCMinutes(now.getUTCMinutes() + 30);
+                         const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                        fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                        fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                        res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                }
+                finally{
+                    db_connection.release();
+                }
+
+               
+       
+        
+    }
+
+        
     },
 
     getUserDetails : [
         webtokenValidator,async (req,res) => {
-
-            console.log(req.body.userEmail)
             if(validator.isEmail(req.body.userEmail))
          {
 
         const db_connection = await db.promise().getConnection();
         try{
+            await db_connection.query("lock tables userdata read, AnokhaUserData read");
             let sql_q = "select * from AnokhaUserData where userEmail = ?";
             const [results] = await db_connection.query(sql_q, req.body.userEmail);
+            await db_connection.query('unlock tables');
             res.status(200).send(results);
         }
 
@@ -243,17 +272,16 @@ module.exports = {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
             return;
             }
-        }
-    ],
 
+
+    }],
     insertStarredEvent : [
-        webtokenValidator,async (req,res) => {
+        webtokenValidator,
+       async (req,res) => {
 
             if(req.body.userEmail == undefined ||
                 req.body.eventId == undefined ||
-                !validator.isEmail(req.body.userEmail)
-            ||
-            !validator.isNumeric(req.body.eventId))
+                !validator.isEmail(req.body.userEmail))
             {
                 res.status(400).send({error : "We are one step ahead! Try harder!"});
                 return;
@@ -263,11 +291,9 @@ module.exports = {
             let sql_q = `insert into starredevents values (?,?)`
             let db_connection = await db.promise().getConnection();
             try{
-                const lockName = "INSERTSTARREDEVENTS";
-                const lockTimeout = 10;
-                await db_connection.query(`SELECT GET_LOCK(?, ?)`, [lockName, lockTimeout]);
+                await db_connection.query("lock tables starredevents write");
                 const [results] = await db_connection.query(sql_q, [req.body.eventId,req.body.userEmail]); 
-                await db_connection.query(`SELECT RELEASE_LOCK(?)`, [lockName]);
+                await db_connection.query("unlock tables");
                 if(results.affectedRows == 0)
                 {
                     res.status(400).send({"error" : "no data found. dont play around here..."});
@@ -293,31 +319,25 @@ module.exports = {
             }
         }
     ],
-
     dropStarredEvent : [
-        webtokenValidator,
-        async (req,res) => {
+        webtokenValidator,async (req,res) => {
 
             if(req.body.userEmail == undefined ||
                 req.body.eventId == undefined ||
-                !validator.isEmail(req.body.userEmail) ||
-            !validator.isNumeric(req.body.eventId))
+                !validator.isEmail(req.body.userEmail))
             {
                 res.status(400).send({error : "We are one step ahead! Try harder!"});
                 return;
             }
             else{
 
-            let user_email = req.body.userEmail;
-            let event_id = req.body.eventId;
+            
             let sql_q = `delete from starredevents where (userEmail = ? and eventId = ?)`;
             let db_connection = await db.promise().getConnection();
             try{
-                const lockName = "INSERTSTARREDEVENTS";
-                const lockTimeout = 10;
-                await db_connection.query(`SELECT GET_LOCK(?, ?)`, [lockName, lockTimeout]);
+                await db_connection.query("lock tables starredevents write");
                 const [results] = await db_connection.query(sql_q, [req.body.userEmail, req.body.eventId]); 
-                await db_connection.query(`SELECT RELEASE_LOCK(?)`, [lockName]);
+                await db_connection.query("unlock tables");
                 if(results.affectedRows == 0)
                 {
                     res.status(400).send({"error" : "no data found. dont play around here..."});
@@ -343,54 +363,59 @@ module.exports = {
         }
     ],
 
-    verifyOTP : [
-        otpTokenValidator, (req, res) => {
+    verifyOTP :[otpTokenValidator, async (req, res) => {
+        if(req.body.userEmail == undefined ||
+            req.body.otp == undefined ||
+        !validator.isEmail(req.body.userEmail))
+        {
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+            return;
+        }
+        else{
+        const otp = req.body.otp;
+        const userEmail = req.body.userEmail;
 
-
-            if(validator.isEmpty(req.body.userEmail) ||
-            !validator.isEmail(req.body.userEmail) ||
-            !validator.isNumeric(req.body.otp))
-            {
-                res.status(400).send({error : "We are one step ahead! Try harder!"});
-                return;
-            }
-            else{
-            const otp = req.body.otp;
-            const userEmail = req.body.userEmail;
-    
-            db.query(`select * from  AnokhaOTP where userEmail = ? and otp = ?`,[userEmail,otp], (err, result) => {
-                if(err)
+        const db_connection = await db.promise().getConnection();
+        try{
+            await db_connection.query("lock tables otp write, anokhaotp read");
+            const [result] = await db_connection.query(`select * from  AnokhaOTP where userEmail = ? and otp = ?`,[userEmail,otp]);
+            await db_connection.query("unlock tables");
+            console.log(result);
+            if(result.length == 1)
                 {
                     const now = new Date();
                     now.setUTCHours(now.getUTCHours() + 5);
                     now.setUTCMinutes(now.getUTCMinutes() + 30);
-                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                    fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-                    fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                    res.status(500).send({error : "Query Error... Contact DB Admin"});
+                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');   
+                    await db_connection.query("lock tables UserData write, otp write");
+                    db_connection.query(`insert into UserData (userEmail, fullName, password, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[result[0].userEmail,result[0].fullName,result[0].password,result[0].currentStatus,0,result[0].isAmritaCBE,result[0].collegeId,istTime,null,null]);
+                    db_connection.query(`delete from OTP where userEmail = ?`,[userEmail]);
+                    await db_connection.query("unlock tables");
+                    welcomeMailer(result[0].fullName, userEmail);
+                    res.status(200).send({"result" : "success"})
                 }
                 else{
-                    
-                    if(result.length == 1)
-                    {
-                        const now = new Date();
-                        now.setUTCHours(now.getUTCHours() + 5);
-                        now.setUTCMinutes(now.getUTCMinutes() + 30);
-                        const istTime = now.toISOString().slice(0, 19).replace('T', ' ');   
-                        db.query(`insert into UserData (userEmail, fullName, password, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[result[0].userEmail,result[0].fullName,result[0].password,result[0].currentStatus,0,result[0].isAmritaCBE,result[0].collegeId,istTime,null,null], (err2, result2) => {});
-                        db.query(`delete from OTP where userEmail = ?`,[userEmail], (err, result3) => {});
-                        welcomeMailer(result[0].fullName, userEmail);
-                        res.status(200).send({"result" : "success"})
-                    }
-                    else{
-                        res.status(400).send({"error" : "Cannot verify please try again"})
-                    }
+                    res.status(400).send({"error" : "Cannot verify please try again"})
                 }
-            })
+
         }
-    
+
+        catch(err)
+        {
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                 now.setUTCMinutes(now.getUTCMinutes() + 30);
+                 const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
         }
-    ],
+        finally{
+            db_connection.release();
+        } 
+    }
+
+    }],
 
     resetPass : [
         webtokenValidator,
@@ -434,41 +459,50 @@ module.exports = {
         }
     ],
 
-    editUserDetails :[
-        webtokenValidator,
-        async (req,res) => {
-            console.log(req.body.userEmail);
-            if(req.body.fullName == undefined || req.body.userEmail == undefined){
-                res.send("Error, check your request")
+    editUserDetails: [webtokenValidator, async (req,res) => {
+        if(req.body.fullName == undefined ||
+            req.body.password == undefined ||
+            req.body.userEmail == undefined ||
+            validator.isEmpty(req.body.fullName) ||
+            validator.isEmpty(req.body.password) ||
+            validator.isEmpty(req.body.userEmail) ||
+            !validator.isEmail(req.body.userEmail)
+            )
+            {
+                res.status(400).send({error : "We are one step ahead! Try harder!"});
+                return;
             }
-            else {
-            const db_connection = await db.promise().getConnection();
+            else{
+                let sql_q = `Update userData SET fullName = ?,password = ? where userEmail = ?`
+                let db_connection = await db.promise().getConnection();
+        try{
+            
+            await db_connection.query('lock tables userdata write');
+            const [results] = await db_connection.query(sql_q, [req.body.fullName,req.body.password,req.body.userEmail]); 
+            await db_connection.query('unlock tables');
+            if(results.affectedRows == 0)
+            {
+                res.status(400).send({"error" : "no data found. dont play around here..."});
+            }
+            else{
+                res.status(200).send({"result" : "data updated..."});
+            }
 
-            try {
-                await db_connection.query("lock tables userData write");
-                let sql_q = `update userdata set fullName = ? where userEmail = ?`;
-                const [result] = await db_connection.query(sql_q,[req.body.fullName,req.body.userEmail]);
-                await db_connection.query("unlock tables");
-                if(res.affectedRows == 0) {
-                    res.send("Error updating data")
-                }
-                else {
-                    res.send("Updated Data successfully")
-                }
-            }
-            catch(err) {
-                console.log(err);
-                const now = new Date();
-                now.setUTCHours(now.getUTCHours() + 5);
-                now.setUTCMinutes(now.getUTCMinutes() + 30);
-                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
-            }
         }
+        catch(err){
+            const now = new Date();
+            now.setUTCHours(now.getUTCHours() + 5);
+            now.setUTCMinutes(now.getUTCMinutes() + 30);
+            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+          } finally {
+            db_connection.release();
+          }
+   
     }
-    ],
+    }],
 
     getAllColleges : 
         async  (req,res) => {
@@ -491,11 +525,7 @@ module.exports = {
                 fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
             }
-        },
-
-
-       
-        
+        }
     
 
 }

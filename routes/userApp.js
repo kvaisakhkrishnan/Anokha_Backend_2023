@@ -19,8 +19,6 @@ router.post('/transaction/initiateTransaction', userController.intiatePay);
 
 router.get('/getCollegeData', userController.getCollegeData);
 
-router.get('/event/nextEvents', userController.getNextEvent);
-
 
 
 

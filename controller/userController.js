@@ -821,8 +821,8 @@ module.exports = {
         }
         finally{
             await db_connection.release();
-        }
-    },
+
+    }},
 
     getNextEvent : [tokenValidator, async(req, res) => {
         const db_connection = await db.promise().getConnection();
@@ -884,8 +884,15 @@ module.exports = {
           }
     }],
 
+
+            
+            }
+        
+        
+    
+
    
    
 
-}
+
 
