@@ -242,10 +242,9 @@ module.exports = {
         
     },
 
-
-    getUserDetails : [webtokenValidator, async (req, res) => {
-        if(req.body.userEmail != undefined &&
-            validator.isEmail(req.body.userEmail))
+    getUserDetails : [
+        webtokenValidator,async (req,res) => {
+            if(validator.isEmail(req.body.userEmail))
          {
 
         const db_connection = await db.promise().getConnection();
@@ -505,27 +504,28 @@ module.exports = {
     }
     }],
 
-    getCollegeData : async (req, res) => {
-        const db_connection = await db.promise().getConnection();
-        try{
-            await db_connection.query("lock tables CollegeData read");
-            const [result] = await db_connection.query("select * from CollegeData");
-            await db_connection.query("unlock tables");
-            res.send(result);
+    getAllColleges : 
+        async  (req,res) => {
+            const db_connection =  await db.promise().getConnection();
+            try {
+                 await db_connection.query("lock tables anokhacollegeData read");
+                let sql_q = `select * from anokhacollegedata`;
+                const [result] =  await db_connection.query(sql_q);
+                 await db_connection.query("unlock tables");
+
+                res.send(result)
+            }
+            catch(err) {
+                console.log(err);
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+            }
         }
-        catch(err){
-            const now = new Date();
-            now.setUTCHours(now.getUTCHours() + 5);
-            now.setUTCMinutes(now.getUTCMinutes() + 30);
-            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
-        }
-        finally{
-            await db_connection.release();
-        }
-    }
     
 
 }
