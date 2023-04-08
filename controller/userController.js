@@ -670,7 +670,7 @@ module.exports = {
                         const userEmail = req.body.userEmail;
                         const phoneNumber = req.body.phoneNumber;
                         const callbackurl = "http://52.66.236.118:3000/userApp/data";
-                        const text = key + "|" + txid + "|" + amount + "|" + req.body.productId.substring(1,req.body.productId.length) + "|" + firstName + "|" + userEmail + "|||||||||||" + salt;
+                        const text = key + "|" + txid + "|" + amount + "|" + req.body.productId + "|" + firstName + "|" + userEmail + "|||||||||||" + salt;
                         const hash = crypto.createHash('sha512');
                         hash.update(text);
                         hashedData = hash.digest('hex');
@@ -730,7 +730,10 @@ module.exports = {
                     await transaction_db_connection.query("unlock tables");
                     res.status(201).send({
                         "txid" : txid,
+                        "product" : productinfo,
+                        "amount" : amount,
                         "hash" : hashedData
+
                     })
 
                 }
