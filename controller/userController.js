@@ -123,30 +123,29 @@ module.exports = {
             const [results] = await db_connection.query(sql_q2);
             await db_connection.query('unlock tables');
             var jsonResponse = [];
-           if(results.length != 0)
-           {
-                    var eventsByDepartment = {};  
-                    var department = "";
-                    results.forEach(eventData => {
-                        if(eventData.departmentAbbr == department)
-                        {
-                           eventsByDepartment["events"].push(eventData);
-                        }
-                        else
-                        {
-                            if(department != "")
-                            {
-                                jsonResponse.push(eventsByDepartment);
-                            }
-                            eventsByDepartment = {
-                                department : eventData.departmentName,
-                                events : [eventData]
-                            }
-                            department = eventData.departmentAbbr;
-    
-                        }
-                    });
-           }
+            console.log(results);
+            if (results.length !== 0) {
+                var eventsByDepartment = {};
+                var department = "";
+                for (const eventData of results) {
+                  if (eventData.departmentAbbr === department) {
+                    eventsByDepartment.events.push(eventData);
+                  } else {
+                    if (department !== "") {
+                      jsonResponse.push(eventsByDepartment);
+                    }
+                    eventsByDepartment = {
+                      department: eventData.departmentName,
+                      events: [eventData]
+                    };
+                    department = eventData.departmentAbbr;
+                  }
+                }
+                if (department !== "") {
+                  jsonResponse.push(eventsByDepartment);
+                }
+              }
+              
           
 
 
@@ -513,31 +512,32 @@ module.exports = {
             let sql_q = `select * from AnokhaCrewCompleteData order by teamId`;
             await db_connection.query("unlock tables");
             var jsonResponse = [];
-            try{
-            const [results] = await db_connection.query(sql_q);
-            var crewByTeam = {};  
-                    var teamName = "";
-                    results.forEach(crewMember => {
-                        if(crewMember.teamName == teamName)
-                        {
-                            crewByTeam["events"].push(crewByTeam);
-                        }
-                        else
-                        {
-                            if(teamName != "")
-                            {
-                                jsonResponse.push(crewByTeam);
-                            }
-                            crewByTeam = {
-                                teamName : crewMember.teamName,
-                                member : [crewMember]
-                            }
-                            teamName = crewMember.departmentAbbr;
-    
-                        }
-                    });
-                    res.status(200).send(jsonResponse);
-            }
+            try {
+             const [results] = await db_connection.query(sql_q);
+            var crewByTeam = {};
+            var teamName = "";
+            results.forEach((crewMember) => {
+                if (crewMember.teamName === teamName) {
+                crewByTeam.member.push(crewMember);
+                } else {
+                if (teamName !== "") {
+                  jsonResponse.push(crewByTeam);
+                }
+                  crewByTeam = {
+                  teamName: crewMember.teamName,
+                  member: [crewMember]
+                 };
+             teamName = crewMember.teamName;
+    }
+  });
+
+  // Add the last crewByTeam to jsonResponse
+  if (teamName !== "") {
+    jsonResponse.push(crewByTeam);
+  }
+
+  res.status(200).send(jsonResponse);
+}
             catch(err)
             {
                 const now = new Date();
