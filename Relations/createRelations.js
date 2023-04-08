@@ -139,6 +139,17 @@ const createTables = (db) => {
         }
     })
 
+    db.query("create table ResetOtp (userEmail varchar(65) primary key, otp int unique not null, foreign key (userEmail) references userData(userEmail))", (err, result) => {
+        if(err)
+        {
+            console.log("Failed to create ResetOtp table");
+
+        }
+        else{
+            console.log("ResetOtp table created succesfully");  
+        }
+    })
+
     
 
 

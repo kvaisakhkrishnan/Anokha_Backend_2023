@@ -28,5 +28,4 @@ const welcomeMailer = (fullName, userEmail) => {
     
       transporter.sendMail(mailOptions, function(error, info){});
 }
-welcomeMailer();
 module.exports = welcomeMailer;

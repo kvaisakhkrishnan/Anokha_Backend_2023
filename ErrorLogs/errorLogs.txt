@@ -116,3 +116,12 @@ Error: Column 'amount' cannot be null
 2023-04-08 15:01:52
 Error: Column 'amount' cannot be null
 
+2023-04-08 18:03:40
+Error: Column 'currentStatus' cannot be null
+
+2023-04-08 18:05:55
+Error: Column 'currentStatus' cannot be null
+
+Error: Column 'currentStatus' cannot be null
+
+2023-04-08 18:13:51

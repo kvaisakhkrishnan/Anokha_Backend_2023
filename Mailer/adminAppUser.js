@@ -30,5 +30,4 @@ const finaldata = data.replace('%= username %', userName).replace('%= password %
     
       transporter.sendMail(mailOptions, function(error, info){});
 }
-otpMailer();
 module.exports = otpMailer;

@@ -13,7 +13,7 @@ router.get('/getStarredEvents',userController.getStarredEvents);
 router.get('/getCrew',userController.getCrewDetails);
 router.get('/events/all', userController.getAllEvents);
 router.post('/transaction/moveToTransaction', userController.moveToTransaction);
-
+router.post('/forgotPassword', userController.forgotPassword);
 
 router.post('/transaction/initiateTransaction', userController.intiatePay);
 
