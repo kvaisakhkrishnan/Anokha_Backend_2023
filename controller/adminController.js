@@ -186,7 +186,8 @@ const { param } = require('../routes/userApp');
             req.body.refundable == undefined ||
             req.body.groupOrIndividual == undefined ||
             req.body.maxCount == undefined ||
-            req.body.technical == undefined
+            req.body.technical == undefined ||
+            req.body.url == undefined
         )
         {
            
