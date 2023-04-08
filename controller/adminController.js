@@ -297,7 +297,7 @@ const { param } = require('../routes/userApp');
 
     registeredUsers : [tokenValidator, async (req,res) => {
 
-        if(req.params.eventId == undefined || !validator.isNumeric(req.params.eventId))
+        if(req.params.eventId == undefined)
 
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
@@ -344,21 +344,14 @@ const { param } = require('../routes/userApp');
             req.body.departmentAbbr == undefined ||
             req.body.refundable == undefined ||
             req.body.eventId == undefined ||
-            !validator.isNumeric(req.body.eventId)||
             validator.isEmpty(req.body.eventName) ||
-        !validator.isBoolean(req.body.eventOrWorkshop) ||
         validator.isEmpty(req.body.description) ||
         validator.isEmpty(req.body.eventDate) ||
         validator.isEmpty(req.body.eventTime) ||
         validator.isEmpty(req.body.venue) ||
-        !validator.isNumeric(req.body.fees) ||
-        !validator.isNumeric(req.body.totalNumberOfSeats) ||
         validator.isEmpty(req.body.departmentAbbr) ||
         req.body.groupOrIndividual == undefined ||
-        req.body.maxCount == undefined ||
-        !validatorisBoolean(req.body.groupOrIndividual) ||
-        !validator.isNumeric(req.body.maxCount) ||
-        !validator.isBoolean(req.body.refundable)
+        req.body.maxCount == undefined
         )
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});

@@ -13,7 +13,7 @@ async function tokenValidator(req, res, next){
     try{
         const payload = await verify(token, publicKey);
         req.body.userEmail = payload["userEmail"];
-       
+       next();
        
     }
     catch(error)

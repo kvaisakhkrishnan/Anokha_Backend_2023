@@ -100,12 +100,18 @@ module.exports = {
     },
 
     registerUser : async (req,res) => {
-        if(validator.isEmpty(req.body.userEmail)||
+        if(
+            req.body.userEmail == undefined ||
+            req.body.password == undefined ||
+            req.body.fullName == undefined ||
+            req.body.collegeId == undefined ||
+            req.body.userEmail == undefined ||
+            validator.isEmpty(req.body.userEmail)||
         validator.isEmpty(req.body.fullName)||
         validator.isEmpty(req.body.password)||
         validator.isEmpty(req.body.collegeId) ||
-        !validator.isEmail(req.body.userEmail) ||
-        !validator.isBoolean(req.body.collegeId))
+        !validator.isEmail(req.body.userEmail) 
+       )
         
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});

@@ -238,7 +238,7 @@ module.exports = {
                     }
                     else{
 
-                        if(req.body.collegeId == 633 || req.body.collegeId == 638 || req.body.collegeId == 645)
+                        if(req.body.collegeId == 633 || req.body.collegeId == 638 || req.body.collegeId == 641 || req.body.collegeId == 645)
                         {
                             if(req.body.userEmail.includes("@cb.amrita.edu") || req.body.userEmail.includes("@cb.students.amrita.edu"))
                             {
@@ -275,7 +275,7 @@ module.exports = {
                         const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
 
                         await db_connection.query("lock tables otp write");
-                        await db_connection.query(`delete from OTP where userEmail = ?`,[req.body.userEmail], (err, res) => {});
+                        await db_connection.query(`delete from OTP where userEmail = ?`,[req.body.userEmail]);
                         await db_connection.query(`insert into OTP (userEmail, otp, fullName, password, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[req.body.userEmail,otpGenerated,req.body.fullName,req.body.password,currentStatus,0,isAmrita,req.body.collegeId,istTime,null,null]);
                         await db_connection.query("unlock tables");
                                
@@ -321,12 +321,9 @@ module.exports = {
 
 
     verifyOTP :[otpTokenValidator, async (req, res) => {
-
-
         if(req.body.userEmail == undefined ||
             req.body.otp == undefined ||
-        !validator.isEmail(req.body.userEmail) ||
-        !validator.isNumeric(req.body.otp))
+        !validator.isEmail(req.body.userEmail))
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
             return;
@@ -337,9 +334,10 @@ module.exports = {
 
         const db_connection = await db.promise().getConnection();
         try{
-            await db_connection.query("lock tables otp write, anokhaotp write");
+            await db_connection.query("lock tables otp write, anokhaotp read");
             const [result] = await db_connection.query(`select * from  AnokhaOTP where userEmail = ? and otp = ?`,[userEmail,otp]);
             await db_connection.query("unlock tables");
+            console.log(result);
             if(result.length == 1)
                 {
                     const now = new Date();
@@ -384,8 +382,7 @@ module.exports = {
 
             if(req.body.userEmail == undefined ||
                 req.body.eventId == undefined ||
-                !validator.isEmail(req.body.userEmail) ||
-            !validator.isNumeric(req.body.eventId))
+                !validator.isEmail(req.body.userEmail))
             {
                 res.status(400).send({error : "We are one step ahead! Try harder!"});
                 return;
@@ -431,8 +428,7 @@ module.exports = {
 
             if(req.body.userEmail == undefined ||
                 req.body.eventId == undefined ||
-                !validator.isEmail(req.body.userEmail) ||
-            !validator.isNumeric(req.body.eventId))
+                !validator.isEmail(req.body.userEmail))
             {
                 res.status(400).send({error : "We are one step ahead! Try harder!"});
                 return;
