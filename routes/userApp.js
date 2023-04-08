@@ -17,7 +17,7 @@ router.post('/forgotPassword', userController.forgotPassword);
 
 router.post('/transaction/initiateTransaction', userController.intiatePay);
 
-
+router.get('/getCollegeData', userController.getCollegeData);
 
 
 
