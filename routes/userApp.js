@@ -19,6 +19,10 @@ router.post('/transaction/initiateTransaction', userController.intiatePay);
 
 router.get('/getCollegeData', userController.getCollegeData);
 
+// reset password
+router.post('/resetPass',userController.resetPass);
+
+
 
 
 
