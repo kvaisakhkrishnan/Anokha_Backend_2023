@@ -2,24 +2,117 @@
 
 
 Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '? and password = ?' at line 1
+TypeError: crypto.createHash is not a function
 
-<<<<<<< HEAD
-2023-04-06 23:31:29
-TypeError: object is not iterable (cannot read property Symbol(Symbol.iterator))
+2023-04-08 14:12:13
+TypeError: crypto.createHash is not a function
 
-2023-04-06 23:33:32
-2023-04-07 13:26:28
-Error: View 'anokha.anokhaeventdata' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them
+2023-04-08 14:12:40
+2023-04-08 14:12:52
+TypeError: crypto.createHash is not a function
 
-2023-04-07 13:27:37
-Error: View 'anokha.anokhaeventdata' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them
+TypeError: crypto.createHash is not a function
 
-Error: View 'anokha.anokhaeventdata' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them
+2023-04-08 14:13:15
+TypeError: crypto.createHash is not a function
 
-2023-04-07 13:28:23
-2023-04-08 10:53:30
-ReferenceError: tokenGenerator is not defined
+2023-04-08 14:24:22
+TypeError: crypto.createHash is not a function
 
-=======
-2023-04-08 00:54:52
->>>>>>> 0c843b4cb3969498ba5edfcbd1012890f0837d55
+2023-04-08 14:26:07
+2023-04-08 14:26:32
+TypeError: crypto.createHash is not a function
+
+2023-04-08 14:26:33
+TypeError: crypto.createHash is not a function
+
+TypeError: crypto.createHash is not a function
+
+2023-04-08 14:26:33
+2023-04-08 14:26:34
+TypeError: crypto.createHash is not a function
+
+TypeError: crypto.createHash is not a function
+
+2023-04-08 14:26:43
+TypeError: crypto.createHash is not a function
+
+2023-04-08 14:26:44
+TypeError: crypto.createHash is not a function
+
+2023-04-08 14:27:08
+2023-04-08 14:27:30
+TypeError: crypto.createHash is not a function
+
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:48:18
+2023-04-08 14:56:34
+Error: Column 'productId' cannot be null
+
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:20
+2023-04-08 14:57:21
+Error: Column 'productId' cannot be null
+
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:22
+2023-04-08 14:57:23
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:23
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:24
+Error: Column 'productId' cannot be null
+
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:24
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:25
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:25
+2023-04-08 14:57:25
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:26
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:26
+Error: Column 'productId' cannot be null
+
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:27
+Error: Column 'productId' cannot be null
+
+2023-04-08 14:57:27
+2023-04-08 14:58:40
+Error: Column 'amount' cannot be null
+
+2023-04-08 14:59:40
+Error: Column 'amount' cannot be null
+
+Error: Column 'amount' cannot be null
+
+2023-04-08 15:00:09
+Error: Column 'amount' cannot be null
+
+2023-04-08 15:00:42
+Error: Column 'amount' cannot be null
+
+2023-04-08 15:00:57
+2023-04-08 15:01:19
+Error: Column 'amount' cannot be null
+
+2023-04-08 15:01:35
+Error: Column 'amount' cannot be null
+
+2023-04-08 15:01:52
+Error: Column 'amount' cannot be null
+
