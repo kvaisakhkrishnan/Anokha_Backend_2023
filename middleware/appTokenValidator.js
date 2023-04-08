@@ -16,12 +16,14 @@ async function tokenValidator(req, res, next){
         if(payload["secret_key"] == secret_key)
         {
             req.authorization_tier = payload["role"];
-            if(payload["role"] == "STUDENT")
+            if(payload["role"] == "USER")
             {
                 req.body.userEmail = payload["userEmail"];
             }
             else{
+
                 req.body.userName = payload["userName"];
+                req.body.authorization_tier = payload["role"]
             }
             next();
             return;

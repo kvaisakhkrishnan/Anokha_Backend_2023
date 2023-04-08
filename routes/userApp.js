@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controller/userController');
 
-router.get('/events/groupByDepartment',userController.getEventsByDepartment);
 router.post('/editUser',userController.editUserDetails);
 router.get('/getUser',userController.getUserDetails);
 router.post('/login', userController.userLogin);

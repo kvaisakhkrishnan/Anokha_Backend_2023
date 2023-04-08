@@ -18,7 +18,7 @@ router.post('/insertStarrs',userWebController.insertStarredEvent);
 router.post('/dropStarrs',userWebController.dropStarredEvent);
 
 //getUser details
-router.get('/getUser/:userEmail',userWebController.getUserDetails);
+router.get('/getUser',userWebController.getUserDetails);
 
 //register a new user
 router.post('/registerUser', userWebController.registerUser);

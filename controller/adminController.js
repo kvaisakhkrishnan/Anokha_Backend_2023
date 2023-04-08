@@ -88,7 +88,13 @@ const { param } = require('../routes/userApp');
                 res.status(404).send({"error" : "no data found"});
             }
             else{
-                res.status(200).send(result[0]);
+                res.status(200).send({
+                    userName: result[0].userName,
+                    userEmail:  result[0].userEmail,
+                    name:  result[0].name,
+                    phoneNumber:  result[0].phoneNumber,
+                    role:  result[0].role
+                });
             }
          }
          catch(err)
@@ -251,7 +257,7 @@ const { param } = require('../routes/userApp');
                 else{
 
                     const token = await tokenGenerator({
-                        userName : result.userName,
+                        userName : req.body.userName,
                         userEmail : result.userEmail,
                         name : result.name,
                         managerPhoneNumber : result.phoneNumber,

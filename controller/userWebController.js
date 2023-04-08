@@ -209,13 +209,13 @@ module.exports = {
 
     getUserDetails : [
         webtokenValidator,async (req,res) => {
-            if(validator.isEmail(req.params.userEmail))
+            if(validator.isEmail(req.body.userEmail))
          {
 
         const db_connection = await db.promise().getConnection();
         try{
             let sql_q = "select * from AnokhaUserData where userEmail = ?";
-            const [results] = await db_connection.query(sql_q, req.params.userEmail);
+            const [results] = await db_connection.query(sql_q, req.body.userEmail);
             res.status(200).send(results);
         }
 
