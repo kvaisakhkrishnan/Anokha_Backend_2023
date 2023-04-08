@@ -128,3 +128,30 @@ Error: Column 'currentStatus' cannot be null
 2023-04-08 19:02:30
 TypeError [ERR_INVALID_ARG_TYPE]: The first argument must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object. Received function request
 
+2023-04-09 00:21:51
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by eventData.eventTime' at line 1
+
+2023-04-09 00:22:31
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by eventData.eventTime' at line 1
+
+2023-04-09 00:22:34
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by eventData.eventTime' at line 1
+
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by eventData.eventTime' at line 1
+
+2023-04-09 00:23:36
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by eventData.eventTime' at line 1
+
+2023-04-09 00:23:41
+2023-04-09 00:23:44
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order by eventData.eventTime' at line 1
+
+Error: Unknown column 'eventData.evenTime' in 'where clause'
+
+2023-04-09 00:25:58
+2023-04-09 00:27:04
+Error: Column 'userEmail' in where clause is ambiguous
+
+2023-04-09 00:40:33
+Error: Unknown column 'registeredEvents.date' in 'where clause'
+

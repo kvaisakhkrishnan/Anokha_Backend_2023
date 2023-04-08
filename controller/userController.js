@@ -824,7 +824,7 @@ module.exports = {
         }
     },
 
-    getNextEvent : async(req, res) => {
+    getNextEvent : [tokenValidator, async(req, res) => {
         const db_connection = await db.promise().getConnection();
         try{
             // Get the current date and time
@@ -842,10 +842,31 @@ module.exports = {
             const currentTime = `${formattedHours}:${formattedMinutes}`;
 
 
+            const months = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+              ];
+              
+              
+              // Get the day, month, and year
+              const day = currentDate.getDate();
+              const month = months[currentDate.getMonth()];
+              const year = currentDate.getFullYear();
+              
+              // Format the date in "day-MON-year" format
+              const formattedDate = `${day}-${month}-${year}`;
+              
+             
+
             await db_connection.query("lock tables registeredEvents read, eventData read");
-            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where eventData.evenTime > ? and userEmail = ? order by eventData.eventTime order by eventData.eventTime", [currentTime, req.body.userEmail]);
+            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where eventData.eventTime > ? and registeredEvents.userEmail = ? and eventData.date = ? order by eventData.eventTime", [currentTime,req.body.userEmail, formattedDate]);
             await db_connection.query("unlock tables");
-            res.status(200).send(result[0]);
+            if(result.length == 0)
+            {
+                    res.status(404).send({"error" : "no data found"});
+            }
+            else{
+                res.status(200).send(result);
+            }
         }
         catch(err) {
             console.log(err);
@@ -861,7 +882,7 @@ module.exports = {
         finally {
             db_connection.release();
           }
-    }
+    }],
 
    
    
