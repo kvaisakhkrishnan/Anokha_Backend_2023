@@ -630,9 +630,8 @@ module.exports = {
             req.body.state == undefined ||
             req.body.country == undefined ||
             req.body.zipcode == undefined ||
-            req.body.phoneNumber == undefined ||
-            !validator.isNumeric(req.body.zipcode) ||
-            !validator.isNumeric(req.body.phoneNumber)
+            req.body.phoneNumber == undefined 
+          
 
             )
             {
