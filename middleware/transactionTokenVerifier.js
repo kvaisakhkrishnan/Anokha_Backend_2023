@@ -15,11 +15,13 @@ async function tokenValidator(req, res, next){
     const publicKey = fs.readFileSync('./AssymetricKeyPair/transaction_public_key.pem');
     try{
         const payload = await verify(token, publicKey);
+        
         if(payload["userEmail"] == req.body.userEmail && secret_token_transaction == payload["secret_key"])
         {
             next();
             return;
         }
+        
         res.status(401).send({"error" : "Unauthorized access"});
         return;
            

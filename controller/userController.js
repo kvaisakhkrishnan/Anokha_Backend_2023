@@ -664,8 +664,8 @@ module.exports = {
                         const hash = crypto.createHash('sha512');
                         hash.update(text);
                         hashedData = hash.digest('hex');
-
-                        res.send("hash generated")
+                        
+                        
                         
                     }
                     
