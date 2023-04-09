@@ -40,6 +40,8 @@ router.post('/transaction/initiateTransaction', userWebController.intiatePay);
 
 router.post('/transaction/moveToTransaction', userWebController.moveToTransaction);
 
+router.get('/events/myRegistered', userWebController.myEvents);
+
 
 module.exports = router;
 
