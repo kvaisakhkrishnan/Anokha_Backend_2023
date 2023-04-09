@@ -118,9 +118,9 @@ module.exports = {
             await db_connection.query("lock tables AnokhaCompleteUserData read, UserData read, CollegeData read")
             const [result1] = await db_connection.query(sql_q, [req.body.userEmail, req.body.password]);
             await db_connection.query('unlock tables');
-            let sql_q2 = `select * from AnokhaEventsAndDepartments order by departmentAbbr`;
-            await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read');
-            const [results] = await db_connection.query(sql_q2);
+            let sql_q2 = `SELECT *, CASE WHEN EXISTS (SELECT 1 FROM starredEvents WHERE starredEvents.eventId = AnokhaEventsAndDepartments.eventId AND starredEvents.userEmail = ?) THEN 1 ELSE 0 END AS isStarred FROM AnokhaEventsAndDepartments`;
+            await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read, starredEvents read');
+            const [results] = await db_connection.query(sql_q2, [req.body.userEmail]);
             await db_connection.query('unlock tables');
             var jsonResponse = [];
             if (results.length !== 0) {
@@ -855,9 +855,10 @@ module.exports = {
               const formattedDate = `${day}-${month}-${year}`;
               
              
+//            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where eventData.eventTime > ? and registeredEvents.userEmail = ? and eventData.date = ? order by eventData.eventTime", [currentTime,req.body.userEmail, formattedDate]);
 
             await db_connection.query("lock tables registeredEvents read, eventData read");
-            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where eventData.eventTime > ? and registeredEvents.userEmail = ? and eventData.date = ? order by eventData.eventTime", [currentTime,req.body.userEmail, formattedDate]);
+            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where registeredEvents.userEmail = ?  order by eventData.eventTime", [req.body.userEmail]);
             await db_connection.query("unlock tables");
             if(result.length == 0)
             {
@@ -883,7 +884,32 @@ module.exports = {
           }
     }],
 
+    myEvents : [tokenValidator, async (req, res) => {
+        const db_connection = await db.promise().getConnection();
+        try{
+            await db_connection.query("lock tables eventData read, registeredEvents read");
+            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where registeredEvents.userEmail = ?", [req.body.userEmail]);
+            await db_connection.query("unlock tables");
+            res.status(200).send(result);
+        }
+        catch(err) {
+            console.log(err);
+            const now = new Date();
+            now.setUTCHours(now.getUTCHours() + 5);
+            now.setUTCMinutes(now.getUTCMinutes() + 30);
+            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+        }
 
+        finally {
+            db_connection.release();
+          }
+    }]
+
+    
+    
             
             }
         

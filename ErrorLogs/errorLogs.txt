@@ -167,3 +167,60 @@ Error: Table 'anokha.anokhaeventsdata' doesn't exist
 2023-04-09 12:15:06
 Error: Table 'anokhaeventsdata' was not locked with LOCK TABLES
 
+Error: Table 'starredEvents' was not locked with LOCK TABLES
+
+2023-04-09 18:11:30
+2023-04-09 18:11:32
+Error: Table 'starredEvents' was not locked with LOCK TABLES
+
+2023-04-09 18:27:39
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '* , case when starredEvents.eventId = AnokhaEventsAndDepartments.eventId then 1 ' at line 1
+
+Error: Unknown column 'eventData.eventId' in 'field list'
+
+2023-04-09 18:27:46
+2023-04-09 18:31:15
+Error: Unknown column 'eventData.eventId' in 'field list'
+
+2023-04-09 18:31:23
+Error: Unknown column 'eventData.eventId' in 'field list'
+
+2023-04-09 18:31:34
+Error: Unknown column 'eventData.eventId' in 'field list'
+
+2023-04-09 18:32:13
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '*, case when starredEvents.eventId = AnokhaEventsAndDepartments.eventId then 1 e' at line 1
+
+2023-04-09 18:43:26
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+
+2023-04-09 18:43:26
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+
+2023-04-09 18:51:27
+Error: Table 'anokha.anokhastarredeventsdata' doesn't exist
+
+2023-04-09 18:57:10
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+
+2023-04-09 18:57:12
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+
+Error: Table 'anokha.anokhastarredeventsdata' doesn't exist
+
+2023-04-09 19:08:50
+2023-04-09 19:12:42
+Error: Table 'anokha.anokhastarredeventsdata' doesn't exist
+
+2023-04-09 19:15:27
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+
+2023-04-09 19:15:27
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+
+2023-04-09 21:18:39
+2023-04-09 21:19:50
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+

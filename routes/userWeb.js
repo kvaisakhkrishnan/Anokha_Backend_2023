@@ -33,7 +33,15 @@ router.post('/resetPass',userWebController.resetPass);
 router.post('/editUser',userWebController.editUserDetails)
 
 //get all colleges
-router.get('/getCollegeData',userWebController.getCollegeData);
+router.get('/getCollegeData',userWebController.getAllColleges);
+
+
+router.post('/transaction/initiateTransaction', userWebController.intiatePay);
+
+router.post('/transaction/moveToTransaction', userWebController.moveToTransaction);
+
+router.get('/events/myRegistered', userWebController.myEvents);
+
 
 module.exports = router;
 
