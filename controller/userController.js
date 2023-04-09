@@ -504,7 +504,7 @@ module.exports = {
 
 
 
-    getCrewDetails : [tokenValidator,
+    getCrewDetails : 
        async (req,res) => {
             let db_connection = await db.promise().getConnection();
             await db_connection.query("lock tables AnokhaCrewCompleteData read, userdata read, collegedata read");
@@ -553,7 +553,7 @@ module.exports = {
             }
             
         }
-    ],
+,
 
 
 
