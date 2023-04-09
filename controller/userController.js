@@ -884,17 +884,6 @@ module.exports = {
           }
     }],
 
-    myEvents : [tokenValidator, async (req, res) => {}]
-
-
-            
-            }
-        
-        
-    
 
    
-   
-
-
-
+}
