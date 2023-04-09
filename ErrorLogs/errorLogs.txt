@@ -167,3 +167,9 @@ Error: Table 'anokha.anokhaeventsdata' doesn't exist
 2023-04-09 12:15:06
 Error: Table 'anokhaeventsdata' was not locked with LOCK TABLES
 
+Error: Table 'starredEvents' was not locked with LOCK TABLES
+
+2023-04-09 18:11:30
+2023-04-09 18:11:32
+Error: Table 'starredEvents' was not locked with LOCK TABLES
+

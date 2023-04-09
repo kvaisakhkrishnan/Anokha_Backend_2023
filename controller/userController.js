@@ -118,9 +118,9 @@ module.exports = {
             await db_connection.query("lock tables AnokhaCompleteUserData read, UserData read, CollegeData read")
             const [result1] = await db_connection.query(sql_q, [req.body.userEmail, req.body.password]);
             await db_connection.query('unlock tables');
-            let sql_q2 = `select * from AnokhaEventsAndDepartments order by departmentAbbr`;
-            await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read');
-            const [results] = await db_connection.query(sql_q2);
+            let sql_q2 = `select * , case when starredEvents.eventId = AnokhaEventsAndDepartments.eventId then 1 else 0 end as isStarred from AnokhaEventsAndDepartments, starredEvents where starredEvents.userEmail = ?`;
+            await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read, starredEvents read');
+            const [results] = await db_connection.query(sql_q2, [req.body.userEmail]);
             await db_connection.query('unlock tables');
             var jsonResponse = [];
             if (results.length !== 0) {
