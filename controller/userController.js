@@ -884,6 +884,30 @@ module.exports = {
           }
     }],
 
+    myEvents : [tokenValidator, async (req, res) => {
+        const db_connection = await db.promise().getConnection();
+        try{
+            await db_connection.query("lock tables eventData read, registeredEvents read");
+            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where registeredEvents.userEmail = ?", [req.body.userEmail]);
+            await db_connection.query("unlock tables");
+            res.status(200).send(result);
+        }
+        catch(err) {
+            console.log(err);
+            const now = new Date();
+            now.setUTCHours(now.getUTCHours() + 5);
+            now.setUTCMinutes(now.getUTCMinutes() + 30);
+            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+        }
+
+        finally {
+            db_connection.release();
+          }
+    }]
+
     
     
             

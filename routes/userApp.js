@@ -21,6 +21,8 @@ router.get('/getCollegeData', userController.getCollegeData);
 
 router.get('/events/nextEvent', userController.getNextEvent);
 
+router.get('/events/myRegistered', userController.myEvents);
+
 
 
 
