@@ -16,14 +16,13 @@ module.exports = {
     getAllEvents :  async (req, res) => {
         let db_connection = await db.promise().getConnection();
         try{
-            await db_connection.query("lock tables anokhaeventsanddepartments read,eventdata read,departmentdata read,anokhaeventdata read");
-            const [result] = await db_connection.query(`select * from anokhaeventsanddepartments`);
+            await db_connection.query("lock tables eventData read, ");
+            const [result] = await db_connection.query(`select * from eventData`);
             await db_connection.query("unlock tables");
             res.status(200).send(result);
         }
         catch(err)
         {
-            console.log(err);
             const now = new Date();
             now.setUTCHours(now.getUTCHours() + 5);
             now.setUTCMinutes(now.getUTCMinutes() + 30);
@@ -478,7 +477,7 @@ module.exports = {
     }
     }],
 
-    getCollegeData : 
+    getAllColleges : 
         async  (req,res) => {
             const db_connection =  await db.promise().getConnection();
             try {
@@ -499,7 +498,175 @@ module.exports = {
                 fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
             }
+        },
+
+
+    moveToTransaction : [webtokenValidator, async (req, res) => {
+        const tokenHeader = req.headers.authorization;
+        const token = tokenHeader && tokenHeader.split(' ')[1];
+        if(token == null)
+        {
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+            return;
         }
+        const transactionToken = await transactionTokenGenerator({
+            SECRET_TOKEN : token
+        });
+        if(transactionToken == null)
+        {
+            res.status(400).send({"error" : "Invalid Token"});
+            return;
+        }
+        res.status(200).send({"TRANSACTION_SECRET_TOKEN" : transactionToken});
+    }],
+
+
+
+    
+
+
+    
+
+
+
+    intiatePay :[transactionTokenVerifier, async (req, res) => {
+
+        if(
+            req.body.productId == undefined ||
+            (req.body.productId[0] !="E" && req.body.productId[0] !="P") ||
+            req.body.firstName == undefined ||
+            req.body.userEmail == undefined ||
+            !validator.isEmail(req.body.userEmail) ||
+            req.body.address == undefined ||
+            req.body.city == undefined ||
+            req.body.state == undefined ||
+            req.body.country == undefined ||
+            req.body.zipcode == undefined ||
+            req.body.phoneNumber == undefined 
+          
+
+            )
+            {
+                res.status(400).send({"error" : "Wohooooo..! Be careful.... If you are bad, I am your dad!"})
+            }
+            else{
+
+                
+                
+                var hashedData;
+                var txid;
+                var amount;
+                var productinfo;
+                if(req.body.productId[0] == "E")
+                {
+                    const db_connection = await db.promise().getConnection();
+                try{
+                    await db_connection.query("lock tables eventData read");
+                    const [result] = await db_connection.query("select * from eventData where eventId = ?", [req.body.productId.substring(1,req.body.productId.length)]);
+                    await db_connection.query("unlock tables");
+                  
+                    if(result.length == 0)
+                    {
+                        
+                        res.status(400).send({"error" : "We are much ahead of you..."});
+                        return;
+                    }
+                    else{
+                        txid = "ANOKHA2023" + new Date().getTime();
+                        amount = result[0].fees;
+                        const key = "Pz9v2c";
+                        const salt = "TbxC2ph02lBUbVYwx0fIB50CvqL27pHo";
+                        productinfo = req.body.productId;
+                        const firstName = req.body.firstName;
+                        const userEmail = req.body.userEmail;
+                        const phoneNumber = req.body.phoneNumber;
+                        const callbackurl = "http://52.66.236.118:3000/userApp/data";
+                        const text = key + "|" + txid + "|" + amount + "|" + req.body.productId + "|" + firstName + "|" + userEmail + "|||||||||||" + salt;
+                        const hash = crypto.createHash('sha512');
+                        hash.update(text);
+                        hashedData = hash.digest('hex');
+
+                        
+                    }
+                    
+                }
+                catch(err)
+                    {
+                            const now = new Date();
+                            now.setUTCHours(now.getUTCHours() + 5);
+                            now.setUTCMinutes(now.getUTCMinutes() + 30);
+                            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                    }
+                finally{
+                    await db_connection.release();
+                }
+
+                }
+                else{
+                        txid = "ANOKHA2023" + new Date().getTime();
+                        amount = 500;
+                        const key = "Pz9v2c";
+                        const salt = "TbxC2ph02lBUbVYwx0fIB50CvqL27pHo";
+                        productinfo = "PASSPORT";
+                        const firstName = req.body.firstName;
+                        const userEmail = req.body.userEmail;
+                        const phoneNumber = req.body.phoneNumber;
+                        const callbackurl = "http://52.66.236.118:3000/userApp/data";
+                        const text = key + "|" + txid + "|" + amount + "|" + productinfo + "|" + firstName + "|" + userEmail + "|||||||||||" + salt;
+                        const hash = crypto.createHash('sha512');
+                        hash.update(text);
+                        hashedData = hash.digest('hex');
+
+                }
+                const transaction_db_connection = await transactions_db.promise().getConnection(); 
+                try{
+                      
+                    const now = new Date();
+                    now.setUTCHours(now.getUTCHours() + 5);
+                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                    await transaction_db_connection.query("lock tables transactions write");
+                    if(req.body.productId[0] == "E")
+                    {
+                        await transaction_db_connection.query("insert into transactions (transactionId, productId, userEmail, senderName, eventIdOrPassportId, amount, timeStamp, transactionStatus, address, city, state, zipcode, country, phoneNumber) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [txid, req.body.productId.substring(2,req.body.productId.length), req.body.userEmail, req.body.firstName,'EVENT' , amount, istTime, 'INITIATED', req.body.address, req.body.city, req.body.state, req.body.zipcode, req.body.country, req.body.phoneNumber]);
+
+                    }
+                    else{
+                        await transaction_db_connection.query("insert into transactions (transactionId, productId, userEmail, senderName, eventIdOrPassportId, amount, timeStamp, transactionStatus, address, city, state, zipcode, country, phoneNumber) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [txid, productinfo, req.body.userEmail, req.body.firstName, 'PASSPORT', amount, istTime, 'INITIATED', req.body.address, req.body.city, req.body.state, req.body.zipcode, req.body.country, req.body.phoneNumber]);
+
+                    }
+                    await transaction_db_connection.query("unlock tables");
+                    res.status(201).send({
+                        "txid" : txid,
+                        "product" : productinfo,
+                        "amount" : amount,
+                        "hash" : hashedData
+
+                    })
+
+                }
+                catch(err)
+                {
+                    const now = new Date();
+                    now.setUTCHours(now.getUTCHours() + 5);
+                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                    fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                    fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                    res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                }
+                finally{
+                    await transaction_db_connection.release();
+                }
+
+                
+           
+            }
+
+    }],
     
 
 }

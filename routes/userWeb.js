@@ -35,6 +35,12 @@ router.post('/editUser',userWebController.editUserDetails)
 //get all colleges
 router.get('/getCollegeData',userWebController.getCollegeData);
 
+router.post('/transaction/initiateTransaction', userController.intiatePay);
+
+router.post('/transaction/moveToTransaction', userController.moveToTransaction);
+
+
+
 module.exports = router;
 
 
