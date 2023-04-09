@@ -155,3 +155,15 @@ Error: Column 'userEmail' in where clause is ambiguous
 2023-04-09 00:40:33
 Error: Unknown column 'registeredEvents.date' in 'where clause'
 
+2023-04-09 12:12:57
+Error: Table 'anokhaeventsdata' was not locked with LOCK TABLES
+
+2023-04-09 12:13:37
+Error: Table 'anokhaeventsdata' was not locked with LOCK TABLES
+
+2023-04-09 12:14:05
+Error: Table 'anokha.anokhaeventsdata' doesn't exist
+
+2023-04-09 12:15:06
+Error: Table 'anokhaeventsdata' was not locked with LOCK TABLES
+

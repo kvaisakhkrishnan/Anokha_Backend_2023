@@ -33,7 +33,7 @@ router.post('/resetPass',userWebController.resetPass);
 router.post('/editUser',userWebController.editUserDetails)
 
 //get all colleges
-router.get('/getAllColleges',userWebController.getAllColleges);
+router.get('/getCollegeData',userWebController.getCollegeData);
 
 module.exports = router;
 
