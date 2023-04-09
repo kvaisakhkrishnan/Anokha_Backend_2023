@@ -501,6 +501,10 @@ module.exports = {
         },
 
 
+
+    
+
+
     moveToTransaction : [webtokenValidator, async (req, res) => {
         const tokenHeader = req.headers.authorization;
         const token = tokenHeader && tokenHeader.split(' ')[1];
@@ -519,11 +523,6 @@ module.exports = {
         }
         res.status(200).send({"TRANSACTION_SECRET_TOKEN" : transactionToken});
     }],
-
-
-
-    
-
 
     
 

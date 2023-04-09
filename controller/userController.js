@@ -858,7 +858,7 @@ module.exports = {
 //            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where eventData.eventTime > ? and registeredEvents.userEmail = ? and eventData.date = ? order by eventData.eventTime", [currentTime,req.body.userEmail, formattedDate]);
 
             await db_connection.query("lock tables registeredEvents read, eventData read");
-            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where registeredEvents.userEmail = ? order by eventData.eventTime", [req.body.userEmail]);
+            const [result] = await db_connection.query("select * from registeredEvents left join eventData on registeredEvents.eventId = eventData.eventId where registeredEvents.userEmail = ?  order by eventData.eventTime", [req.body.userEmail]);
             await db_connection.query("unlock tables");
             if(result.length == 0)
             {
@@ -884,6 +884,16 @@ module.exports = {
           }
     }],
 
+    
+    
+            
+            }
+        
+        
+    
 
    
-}
+   
+
+
+
