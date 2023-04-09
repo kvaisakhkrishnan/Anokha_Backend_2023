@@ -47,33 +47,7 @@ module.exports = {
             await db_connection.query("lock tables AnokhaCompleteUserData read, UserData read, CollegeData read")
             const [result1] = await db_connection.query(sql_q, [req.body.userEmail, req.body.password]);
             await db_connection.query('unlock tables');
-            let sql_q2 = `select * from AnokhaEventsAndDepartments order by departmentAbbr`;
-            await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read');
-            const [results] = await db_connection.query(sql_q2);
-            await db_connection.query('unlock tables');
-            var jsonResponse = [];
-            console.log(results);
-            if (results.length !== 0) {
-                var eventsByDepartment = {};
-                var department = "";
-                for (const eventData of results) {
-                  if (eventData.departmentAbbr === department) {
-                    eventsByDepartment.events.push(eventData);
-                  } else {
-                    if (department !== "") {
-                      jsonResponse.push(eventsByDepartment);
-                    }
-                    eventsByDepartment = {
-                      department: eventData.departmentName,
-                      events: [eventData]
-                    };
-                    department = eventData.departmentAbbr;
-                  }
-                }
-                if (department !== "") {
-                  jsonResponse.push(eventsByDepartment);
-                }
-              }
+            
               
           
 
@@ -93,7 +67,7 @@ module.exports = {
                     country : result1[0].country,
                     role : "USER"
                 });
-                res.json({"userData" : {
+                res.json({
                     
                         userEmail : result1[0].userEmail,
                         fullName : result1[0].fullName,
@@ -104,8 +78,7 @@ module.exports = {
                         state : result1[0].state,
                         country : result1[0].country,
                         SECRET_TOKEN : token
-                },
-                "events" : jsonResponse
+                
                     
                 });
             

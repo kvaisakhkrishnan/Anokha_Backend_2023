@@ -123,7 +123,6 @@ module.exports = {
             const [results] = await db_connection.query(sql_q2);
             await db_connection.query('unlock tables');
             var jsonResponse = [];
-            console.log(results);
             if (results.length !== 0) {
                 var eventsByDepartment = {};
                 var department = "";
