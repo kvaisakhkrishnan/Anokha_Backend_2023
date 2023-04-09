@@ -16,13 +16,14 @@ module.exports = {
     getAllEvents :  async (req, res) => {
         let db_connection = await db.promise().getConnection();
         try{
-            await db_connection.query("lock tables eventData read");
-            const [result] = await db_connection.query(`select * from eventData`);
+            await db_connection.query("lock tables anokhaeventsanddepartments read,eventdata read,departmentdata read,anokhaeventdata read");
+            const [result] = await db_connection.query(`select * from anokhaeventsanddepartments`);
             await db_connection.query("unlock tables");
             res.status(200).send(result);
         }
         catch(err)
         {
+            console.log(err);
             const now = new Date();
             now.setUTCHours(now.getUTCHours() + 5);
             now.setUTCMinutes(now.getUTCMinutes() + 30);
@@ -477,7 +478,7 @@ module.exports = {
     }
     }],
 
-    getAllColleges : 
+    getCollegeData : 
         async  (req,res) => {
             const db_connection =  await db.promise().getConnection();
             try {
