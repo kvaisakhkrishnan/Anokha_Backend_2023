@@ -118,7 +118,7 @@ module.exports = {
             await db_connection.query("lock tables AnokhaCompleteUserData read, UserData read, CollegeData read")
             const [result1] = await db_connection.query(sql_q, [req.body.userEmail, req.body.password]);
             await db_connection.query('unlock tables');
-            let sql_q2 = `select *,  AnokhaEventsAndDepartments.eventId, case when starredEvents.eventId = AnokhaEventsAndDepartments.eventId then 1 else 0 end as isStarred from AnokhaEventsAndDepartments, starredEvents where starredEvents.userEmail = ?`;
+            let sql_q2 = `SELECT *, CASE WHEN EXISTS (SELECT 1 FROM starredEvents WHERE starredEvents.eventId = AnokhaEventsAndDepartments.eventId AND starredEvents.userEmail = ?) THEN 1 ELSE 0 END AS isStarred FROM AnokhaEventsAndDepartments`;
             await db_connection.query('lock tables eventdata read, departmentdata read, AnokhaEventsAndDepartments read, starredEvents read');
             const [results] = await db_connection.query(sql_q2, [req.body.userEmail]);
             await db_connection.query('unlock tables');
