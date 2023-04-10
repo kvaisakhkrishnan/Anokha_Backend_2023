@@ -81,6 +81,7 @@ const PORT = 3000;
         for (let i = 0; i < numberOfSlaves; i++) {
           cluster.fork();
         }
+        checkPaymentStatus();
       
         setInterval(checkPaymentStatus, 900000); // 15 minutes trigger in main thread
     }

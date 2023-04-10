@@ -578,8 +578,8 @@ module.exports = {
                     else{
                         txid = "ANOKHA2023" + new Date().getTime();
                         amount = result[0].fees;
-                        const key = "Pz9v2c";
-                        const salt = "TbxC2ph02lBUbVYwx0fIB50CvqL27pHo";
+                        const key = "ypfBaj";
+                        const salt = "aG3tGzBZ";
                         productinfo = req.body.productId;
                         const firstName = req.body.firstName;
                         const userEmail = req.body.userEmail;
