@@ -38,6 +38,8 @@ router.post('/getStats/totalRegs',adminController.getTotalRegs);
 
 router.get('/getStats/totalRevenue', adminController.getTotalRevenue);
 
+router.post('/event/delete', adminController.deleteEvent);
+
 
 
 
