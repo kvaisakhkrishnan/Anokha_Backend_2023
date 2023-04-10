@@ -109,6 +109,10 @@ module.exports = {
 
 
     userLogin : async (req, res) => {
+        if(req.is('json'))
+        {
+
+        
         if(req.body.userEmail != undefined && req.body.password != undefined && !validator.isEmpty(req.body.userEmail) && !validator.isEmpty(req.body.password) && validator.isEmail(req.body.userEmail)){
         
         let db_connection = await db.promise().getConnection();
@@ -201,6 +205,10 @@ module.exports = {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
             return;
         }
+    }
+    else{
+        res.status(401).send({"error" : "Unauthorized access"});
+    }
     },
 
 
@@ -209,7 +217,8 @@ module.exports = {
     
 
     registerUser : async (req, res) =>{
-
+        if(req.is('json'))
+        {
 
         if(req.body.userEmail == undefined ||
             req.body.fullName == undefined ||
@@ -313,6 +322,10 @@ module.exports = {
        
         
     }
+}
+else{
+    res.status(401).send({"error" : "Unauthorized access"});
+}
 
         
     },
@@ -757,6 +770,9 @@ module.exports = {
     }],
 
     forgotPassword : async (req, res) => {
+
+        if(req.is('json'))
+        {
         if(req.body.userEmail == undefined ||
             !validator.isEmail(req.body.userEmail))
             {
@@ -798,11 +814,17 @@ module.exports = {
             }
 
         }
+    }
+    else{
+        res.status(401).send({"error" : "Unauthorized access"});
+    }
     },
 
 
 
     getCollegeData : async (req, res) => {
+        if(req.is('json'))
+        {
         const db_connection = await db.promise().getConnection();
         try{
             await db_connection.query("lock tables CollegeData read");
@@ -822,7 +844,12 @@ module.exports = {
         finally{
             await db_connection.release();
 
-    }},
+    }
+}
+else{
+    res.status(401).send({"error" : "Unauthorized access"});
+}
+},
 
     getNextEvent : [tokenValidator, async(req, res) => {
         const db_connection = await db.promise().getConnection();

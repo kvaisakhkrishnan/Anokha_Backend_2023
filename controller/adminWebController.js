@@ -12,6 +12,9 @@ const fs = require('fs');
 
 module.exports = {
     adminLogin : async (req, res) => {
+        if(req.is('json'))
+        {
+
         if(req.body.userName == undefined || req.body.password == undefined)
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
@@ -61,6 +64,10 @@ module.exports = {
             }
         
     }
+}
+else{
+    res.status(401).send({"error" : "Unauthorized access"});
+}
     },
 
     createEvent : [webtokenValidator, async  (req, res) => {
