@@ -42,6 +42,8 @@ module.exports = {
                             userName : result[0].userName,
                             fullName : result[0].name,
                             phoneNumber : result[0].phoneNumber,
+                            role : result[0].role,
+                            department : result[0].departmentAbbr,
                             SECRET_TOKEN : token
                         
                     });
@@ -390,7 +392,10 @@ else{
                 fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
             }
-    
+            
+            finally {
+                await db_connection.release()
+            }
     
         }
     ],
@@ -430,6 +435,10 @@ else{
                 fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
                 fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+            }
+
+            finally {
+                await db_connection.release()
             }
         }
         }
@@ -472,6 +481,10 @@ else{
                 fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
                 fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+            }
+
+            finally {
+                await db_connection.release()
             }
             }
         }

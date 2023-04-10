@@ -212,7 +212,7 @@ module.exports = {
                         res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
                 }
                 finally{
-                    db_connection.release();
+                    await db_connection.release();
                 }
 
                
@@ -299,7 +299,7 @@ else{
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
             }
             finally{
-                db_connection.release();
+                await db_connection.release();
             }
             }
         }
@@ -342,7 +342,7 @@ else{
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
             }
             finally{
-                db_connection.release();
+                await db_connection.release();
             }
         }
         }
@@ -396,7 +396,7 @@ else{
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
         }
         finally{
-            db_connection.release();
+            await db_connection.release();
         } 
     }
 
@@ -437,7 +437,7 @@ else{
             }
 
             finally {
-                db_connection.release();
+                await db_connection.release();
               }
             }
         
@@ -483,7 +483,7 @@ else{
             fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
             res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
           } finally {
-            db_connection.release();
+            await db_connection.release();
           }
    
     }
@@ -699,7 +699,7 @@ else{
         }
 
         finally {
-            db_connection.release();
+            await db_connection.release();
           }
     }]
     
