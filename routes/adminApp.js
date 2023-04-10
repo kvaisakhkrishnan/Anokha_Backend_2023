@@ -40,7 +40,7 @@ router.get('/getStats/totalRevenue', adminController.getTotalRevenue);
 
 router.post('/event/delete', adminController.deleteEvent);
 
-router.post('/events/update', adminController.updateEvent);
+
 
 
 

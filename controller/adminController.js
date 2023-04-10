@@ -192,6 +192,7 @@ const { param } = require('../routes/userApp');
             req.body.departmentAbbr == undefined ||
             req.body.refundable == undefined ||
             req.body.groupOrIndividual == undefined ||
+            req.body.minCount == undefined ||
             req.body.maxCount == undefined ||
             req.body.technical == undefined ||
             req.body.url == undefined
@@ -201,7 +202,7 @@ const { param } = require('../routes/userApp');
            
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
-        else if(req.body.groupOrIndividual == 0 && req.body.maxCount != 1)
+        else if(req.body.groupOrIndividual == 0 && (req.body.maxCount != 1 || req.body.minCount != 1 || req.body.minCount > req.body,maxCount))
         {
             res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
         }
@@ -215,9 +216,9 @@ const { param } = require('../routes/userApp');
                 now.setUTCMinutes(now.getUTCMinutes() + 30);
                 const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                 await db_connection.query("lock tables eventData write");
-                let sql_q = `insert into EventData (eventName, eventOrWorkshop,technical, groupOrIndividual, maxCount, description, url, userEmail, date, eventTime, venue, fees, totalNumberOfSeats, noOfRegistrations, timeStamp, refundable, departmentAbbr) values (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
+                let sql_q = `insert into EventData (eventName, eventOrWorkshop,technical, groupOrIndividual, minCount, maxCount, description, url, userEmail, date, eventTime, venue, fees, totalNumberOfSeats, noOfRegistrations, timeStamp, refundable, departmentAbbr) values (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)`;
                 await db_connection.query("unlock tables");
-                const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
+                const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
                 
                 res.status(201).send({result : "Data Inserted Succesfully"});
             }
@@ -368,12 +369,15 @@ const { param } = require('../routes/userApp');
         validator.isEmpty(req.body.venue) ||
         validator.isEmpty(req.body.departmentAbbr) ||
         req.body.groupOrIndividual == undefined ||
-        req.body.maxCount == undefined
+        req.body.maxCount == undefined ||
+        req.body.minCount == undefined ||
+        req.body.userEmail == undefined ||
+        !validator.isEmail(req.body.userEmail)
         )
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
-        else if(req.body.groupOrIndividual == 0 && req.body.maxCount != 0)
+        else if(req.body.groupOrIndividual == 0 && (req.body.maxCount != 1 || req.body.maxCount != 1 || req.body.minCount > req.body.maxCount))
         {
             res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
         }
@@ -381,7 +385,7 @@ const { param } = require('../routes/userApp');
             const db_connection = await db.promise().getConnection();
             try{
                 await db_connection.query('lock tables eventData');
-                const [result] = db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userName = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userName]);
+                const [result] = db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userEmail = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userEmail]);
                 await db_connection.query('unlock tables');
                 if(result.affectedRows == 0)
                 {
@@ -408,18 +412,6 @@ const { param } = require('../routes/userApp');
         
     }
     }],
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -775,62 +767,6 @@ deleteEvent : [tokenValidator, async(req, res) => {
     }
     }
 }],
-
-updateEvent : [tokenValidator, async(req, res) => {
-    if(req.body.eventId == undefined ||
-        req.body.userEmail == undefined ||
-        !validator.isEmail(req.body.userEmail) || 
-        req.body.eventName == undefined ||
-        req.body.eventOrWorkshop == undefined ||
-        req.body.technical == undefined ||
-        req.body.groupOrIndividual == undefined ||
-        req.body.maxCount == undefined ||
-        req.body.description == undefined ||
-        req.body.url == undefined ||
-        req.body.date == undefined ||
-        req.body.eventTime == undefined ||
-        req.body.venue == undefined ||
-        req.body.fees == undefined ||
-        req.body.totalNumberOfSeats == undefined ||
-        req.body.refundable == undefined)
-        {
-            res.status(400).send({error : "We are one step ahead! Try harder!"});
-        }
-        else{
-            const db_connection = await db.promise().getConnection();
-            try{
-                await db_connection.query("lock tables eventData write");
-                const [result] = await db_connection("update eventData set eventName = ?, eventOrWorkshop = ?, technical = ?, groupOrIndividual = ?,maxCount = ?, description = ?, url = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ? where eventManagerEmail = ? and eventId = ?", [req.body.eventName, req.body.eventOrWorkshop, req.body.technical, req.body.groupOrIndividual, req.body.maxCount, req.body.description, req.body.url, req.body.date, req.body.eventTime, req.body.venue, req.body.fees, req.body.totalNumberOfSeats, req.body.refundable, req.body.userEmail, req.body.eventId]);
-                await db_connection.query("unlock tables");
-                if(result.affectedRows == 0)
-                {
-                    res.status(404).send({"error" : "data not found"});
-                }
-                else{
-                    res.send({"status" : "data updated"});
-                }
-            }
-            catch(err)
-            {
-                console.log(err);
-                const now = new Date();
-                now.setUTCHours(now.getUTCHours() + 5);
-                now.setUTCMinutes(now.getUTCMinutes() + 30);
-                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
-            }
-            finally{
-                await db_connection.release();
-            }
-        }
-}]
-
-
-
-
-
 
 
 
