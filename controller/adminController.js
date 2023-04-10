@@ -43,7 +43,9 @@ const { param } = require('../routes/userApp');
                     const db_connection = await db.promise().getConnection();
                     try{
                         var date_time = new Date().toISOString().slice(0, 19).replace('T', ' ')
+                        await db_connection.query("lock tables EventManager write");
                         const [result] = await db_connection.query(`insert into EventManager (userName,userEmail,name,password,timeStamp,phoneNumber,role) values (?,?,?,?,?,?,?)`, [userName, req.body.userEmail, req.body.name, password, date_time, req.body.phoneNumber, req.body.role]);
+                        await db_connection.query("unlock tables");
                         mailer(req.body.name, req.body.userEmail, userName, password);
                         res.status(201).send({"status" : "Done..."});
                     }
@@ -82,7 +84,9 @@ const { param } = require('../routes/userApp');
          let sql_q = `select * from EventManager where userName = ?`;
          const db_connection = await db.promise().getConnection();
          try{
+            await db_connection.query("lock tables eventmanager read");
             const [result] = await db_connection.query(sql_q, [req.body.userName]);
+            await db_connection.query("unlock tables");
             if(result.length == 0)
             {
                 res.status(404).send({"error" : "no data found"});
@@ -122,6 +126,7 @@ const { param } = require('../routes/userApp');
         if(req.authorization_tier == "ADMIN"){
         var sql_q = "";
         parameters = []
+        
         if(req.body.eventDate == undefined && req.body.userName != undefined)
         {
             sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?)`;
@@ -137,7 +142,9 @@ const { param } = require('../routes/userApp');
        
         const db_connection = await db.promise().getConnection();
         try{
+            await db_connection.query("lock tables eventdata read, eventManager read");
             const [result] = await db_connection.query(sql_q, parameters);
+            await db_connection.query("unlock tables");
             if(result.length == 0)
             {
                 res.status(404).send({"error" : "no data found"});
@@ -202,16 +209,16 @@ const { param } = require('../routes/userApp');
             
             const db_connection = await db.promise().getConnection();
             try{
-                const lockName = "CREATEVENT";
-                const lockTimeout = 10;
-                await db_connection.query(`SELECT GET_LOCK(?,?)`, [lockName, lockTimeout]);
+                
                 const now = new Date();
                 now.setUTCHours(now.getUTCHours() + 5);
                 now.setUTCMinutes(now.getUTCMinutes() + 30);
                 const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                await db_connection.query("lock tables eventData write");
                 let sql_q = `insert into EventData (eventName, eventOrWorkshop,technical, groupOrIndividual, maxCount, description, url, userEmail, date, eventTime, venue, fees, totalNumberOfSeats, noOfRegistrations, timeStamp, refundable, departmentAbbr) values (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
+                await db_connection.query("unlock tables");
                 const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
-                await db_connection.query(`SELECT RELEASE_LOCK(?)`, [lockName]);
+                
                 res.status(201).send({result : "Data Inserted Succesfully"});
             }
         
@@ -253,7 +260,9 @@ const { param } = require('../routes/userApp');
         let sql_q = `select * from EventManager where userName = ? and password = ?`
             const db_connection = await db.promise().getConnection();
             try{
+                await db_connection.query("lock tables eventmanager read");
                 const [result] = await db_connection.query(sql_q, [req.body.userName, req.body.password]);
+                await db_connection.query("unlock tables");
                 if(result.length == 0)
                 {
                     res.status(404).send({error : "User not found"})
@@ -311,7 +320,9 @@ const { param } = require('../routes/userApp');
 
         const db_connection = await db.promise().getConnection();
         try{
+            await db_connection.query("lock tables userData read, registeredevents read")
             const [result] = await db_connection.query(sql, [req.params.eventId]);
+            await db_connection.query("unlock tables")
             res.status(200).send(result);
         }
         catch(err)
@@ -367,7 +378,9 @@ const { param } = require('../routes/userApp');
         else{
             const db_connection = await db.promise().getConnection();
             try{
-                const [result] = db.query(`update EventData set eventName = ?, groupOrIndividual = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userName = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userName]);
+                await db_connection.query('lock tables eventData');
+                const [result] = db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userName = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userName]);
+                await db_connection.query('unlock tables');
                 if(result.affectedRows == 0)
                 {
                     res.status(400).send({"error" : "Error in data"});
@@ -525,7 +538,9 @@ const { param } = require('../routes/userApp');
 getAllEvents : [tokenValidator, async (req, res) => {
     let db_connection = await db.promise().getConnection();
     try{
+        await db_connection.query('lock tables eventdata');
         const [result] = await db_connection.query(`select * from EventData`);
+        await db_connection.query('unlock tables');
         res.status(200).send(result);
     }
     catch(err)
@@ -550,7 +565,9 @@ getEventsByDept : [
     async (req,res) => {
         let db_connection = await db.promise().getConnection();
         try{
+            await db_connection.query('lock tables eventdata read');
             const [result] = await db_connection.query(`select * from EventData where departmentAbbr = ?`,[req.params.dept]);
+            await db_connection.query('unlock tables');
             res.status(200).send(result);
         }
 
@@ -577,8 +594,9 @@ getEventsByDate : [
         
         let db_connection = await db.promise().getConnection();
         try{
-            
+            await db_connection.query('lock tables evetdata read');
             const [result] = await db_connection.query(`select * from EventData where date = ?`,[req.params.date]);
+            await db_connection.query('unlock tables');
             res.status(200).send(result);
         }
 
@@ -610,7 +628,6 @@ getTotalFee : [
         else {
         let db_connection = await db.promise().getConnection();
         try {
-            await db_connection.query("lock tables eventData read");
 
             let command = "";
             if(req.body.dept == undefined) {
@@ -622,8 +639,9 @@ getTotalFee : [
             }
 
             let parameter = (req.body.eventName == undefined)? [req.body.dept] : [req.body.eventName];
+            await db_connection.query('lock tables eventdata read');
             const [result] = await db_connection.query(command,parameter)
-            await db_connection.query("unlock tables");
+            await db_connection.query('unlock tables');
             res.status(200).send(result);
 
         }
@@ -654,8 +672,7 @@ getTotalRegs : [
         else {
         let db_connection = await db.promise().getConnection();
         try {
-            await db_connection.query("lock tables eventData read");
-            let command = "";
+            
             if(req.body.dept == undefined) {
                 command = `select noOfRegistrations from eventdata where eventName = ?`;
             }
@@ -663,7 +680,8 @@ getTotalRegs : [
                 command = `select sum(noOfRegistrations) as DEPT_REGISTRATIONS from eventdata group by departmentAbbr having departmentAbbr = ?`
             }
             let parameter = (req.body.dept == undefined) ? [req.body.eventName] : [req.body.dept];
-
+            await db_connection.query("lock tables eventData read");
+            let command = "";
             const [result] = await db_connection.query(command,parameter);
             await db_connection.query("unlock tables")
 
