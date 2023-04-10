@@ -774,6 +774,57 @@ deleteEvent : [tokenValidator, async(req, res) => {
         await db_connection.release();
     }
     }
+}],
+
+updateEvent : [tokenValidator, async(req, res) => {
+    if(req.body.eventId == undefined ||
+        req.body.userEmail == undefined ||
+        !validator.isEmail(req.body.userEmail) || 
+        req.body.eventName == undefined ||
+        req.body.eventOrWorkshop == undefined ||
+        req.body.technical == undefined ||
+        req.body.groupOrIndividual == undefined ||
+        req.body.maxCount == undefined ||
+        req.body.description == undefined ||
+        req.body.url == undefined ||
+        req.body.date == undefined ||
+        req.body.eventTime == undefined ||
+        req.body.venue == undefined ||
+        req.body.fees == undefined ||
+        req.body.totalNumberOfSeats == undefined ||
+        req.body.refundable == undefined)
+        {
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+        }
+        else{
+            const db_connection = await db.promise().getConnection();
+            try{
+                await db_connection.query("lock tables eventData write");
+                const [result] = await db_connection("update eventData set eventName = ?, eventOrWorkshop = ?, technical = ?, groupOrIndividual = ?,maxCount = ?, description = ?, url = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ? where eventManagerEmail = ? and eventId = ?", [req.body.eventName, req.body.eventOrWorkshop, req.body.technical, req.body.groupOrIndividual, req.body.maxCount, req.body.description, req.body.url, req.body.date, req.body.eventTime, req.body.venue, req.body.fees, req.body.totalNumberOfSeats, req.body.refundable, req.body.userEmail, req.body.eventId]);
+                await db_connection.query("unlock tables");
+                if(result.affectedRows == 0)
+                {
+                    res.status(404).send({"error" : "data not found"});
+                }
+                else{
+                    res.send({"status" : "data updated"});
+                }
+            }
+            catch(err)
+            {
+                console.log(err);
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+            }
+            finally{
+                await db_connection.release();
+            }
+        }
 }]
 
 
