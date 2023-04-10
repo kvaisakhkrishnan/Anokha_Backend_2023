@@ -768,6 +768,73 @@ deleteEvent : [tokenValidator, async(req, res) => {
     }
 }],
 
+ 
+addStudentCoordinator : [tokenValidator, async(req, res) => {
+    if(req.body.userEmail == undefined ||
+        !validator.isEmail(req.body.userEmail) ||
+        req.body.studentCoordinatorEmail == undefined ||
+        !validator.isEmail(req.body.studentCoordinatorEmail ||
+        req.body.studentCoordName == undefined ||
+        req.body.studentCoordPhone == undefined ||
+        (!req.body.studentCoordinatorEmail.includes("@cb.amrita.edu") && req.body.studentCoordinatorEmail.includes("@cb.students.amrita.edu"))
+        )
+        )
+        {
+            res.status(400).send({error : "We are one step ahead! Try harder!"});
+        }
+        else{
+            const db_connection = await db.promise().getConnection();
+            try{
+                await db_connection.query("lock tables eventData read");
+                const [result] = await db_connection.query("select eventId, departmentAbbr from eventData where eventManagerEmail = ?", [req.body.userEmail]);
+                await db_connection.query("unlock tables");
+                const gn = rn.generator({
+                    min: 100000,
+                    max: 999999,
+                    integer: true
+                });
+                const now = new Date();
+                now.setUTCHours(now.getUTCHours() + 5);
+                now.setUTCMinutes(now.getUTCMinutes() + 30);
+                const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                const userName = `STUDENTCOORD_${gn()}`;
+                const password = Math.random().toString(36).slice(2) + Math.random().toString(36).toUpperCase().slice(2);
+                await db_connection.query("lock tables eventManager read");
+                const [result1] = await db_connection.query('select * from eventManager where userEmail = ?', [req.body.studentCoordinatorEmail]);
+                await db_connection.query("unlock tables");
+                if(result1.length == 0){
+                await db_connection.query("lock tables eventManager write");
+                const [result2] = await db_connection.query('insert into eventManager (userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?, ?, ?, ?, ?, ?, ?, ?)', [userName, req.body.studentCoordinatorEmail, req.body.studentCoordName, password, istTime, req.body.studentCoordPhone, 'STDCOORD', result[0].departmentAbbr]);
+                await db_connection.query("unlock tables");
+                await db_connection.query("lock tables StudentCoordinator write");
+                const [result3] = await db_connection.query("insert into StudentCoordinator (faculty, student, eventId) values (?, ?, ?)", [req.body.userEmail, req.body.studentCoordinatorEmail,result[0].eventId]);
+                await db_connection.query("unlock tables");   
+                mailer(req.body.name, req.body.userEmail, userName, password); 
+                res.status(201).send({"message" : "Done Succesfully"});
+            }
+                else{
+                    res.status(409).send({"error" : "data already exists"});
+                }
+                
+            }
+            catch(err)
+            {
+        console.log(err);
+        const now = new Date();
+        now.setUTCHours(now.getUTCHours() + 5);
+        now.setUTCMinutes(now.getUTCMinutes() + 30);
+        const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+        fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+        fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+        res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+    }
+    finally{
+        await db_connection.release();
+    }
+        }
+        
+}]
+
 
 
     
