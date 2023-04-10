@@ -40,8 +40,7 @@ module.exports = {
 
     userLogin : async (req, res) => {
 
-        if(req.is('json'))
-        {
+      
         if(req.body.userEmail != undefined && req.body.password != undefined && !validator.isEmpty(req.body.userEmail) && !validator.isEmpty(req.body.password) && validator.isEmail(req.body.userEmail)){
         
         let db_connection = await db.promise().getConnection();
@@ -108,14 +107,11 @@ module.exports = {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
             return;
         }
-    }
-    else{
-        res.status(401).send({"error" : "Unauthorized access"});
-    }
+   
     },
 
     registerUser : async (req, res) =>{
-        if(req.is('json')){
+
 
         if(req.body.userEmail == undefined ||
             req.body.fullName == undefined ||
@@ -219,10 +215,7 @@ module.exports = {
        
         
     }
-}
-else{
-    res.status(401).send({"error" : "Unauthorized access"});
-}
+
 
         
     },
