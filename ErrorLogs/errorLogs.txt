@@ -224,3 +224,15 @@ Error: You have an error in your SQL syntax; check the manual that corresponds t
 2023-04-09 21:19:50
 Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
 
+2023-04-09 22:47:44
+Error: Table 'anokha.anokhastarredeventsdata' doesn't exist
+
+Error: Table 'anokha.anokhastarredeventsdata' doesn't exist
+
+2023-04-09 22:48:41
+2023-04-09 22:51:48
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'eventId from eventdata where userEmail = 'cb.en.u4cse20010@cb.students.amrita.ed' at line 1
+
+2023-04-09 22:52:25
+Error: Table 'eventdata' was not locked with LOCK TABLES
+

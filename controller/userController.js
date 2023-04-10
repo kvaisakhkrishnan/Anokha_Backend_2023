@@ -481,12 +481,13 @@ module.exports = {
 
             let db_connection = await db.promise().getConnection();
             try{
-                await db_connection.query("lock tables AnokhaStarredEventsData read, eventData read, departmentData read");
-                const [result] = await db_connection.query(`select * from AnokhaStarredEventsData where userEmail = ?`,[req.body.userEmail]);
+                await db_connection.query("lock tables starredevents read, eventData read, departmentData read");
+                const [result] = await db_connection.query(`select * from eventData where eventId in (select eventId from starredevents where userEmail = ?)`,[req.body.userEmail]);
                 await db_connection.query("unlock tables");
                 res.send(result);
             }
             catch(err){
+                console.log(err);
                 const now = new Date();
                 now.setUTCHours(now.getUTCHours() + 5);
                 now.setUTCMinutes(now.getUTCMinutes() + 30);
@@ -504,7 +505,7 @@ module.exports = {
 
 
 
-    getCrewDetails : [tokenValidator,
+    getCrewDetails : 
        async (req,res) => {
             let db_connection = await db.promise().getConnection();
             await db_connection.query("lock tables AnokhaCrewCompleteData read, userdata read, collegedata read");
@@ -553,7 +554,7 @@ module.exports = {
             }
             
         }
-    ],
+,
 
 
 
