@@ -190,6 +190,7 @@ const { param } = require('../routes/userApp');
             req.body.url == undefined
         )
         {
+            console.log(req.body.userEmail);
            
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
@@ -209,7 +210,7 @@ const { param } = require('../routes/userApp');
                 now.setUTCMinutes(now.getUTCMinutes() + 30);
                 const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                 let sql_q = `insert into EventData (eventName, eventOrWorkshop,technical, groupOrIndividual, maxCount, description, url, userEmail, date, eventTime, venue, fees, totalNumberOfSeats, noOfRegistrations, timeStamp, refundable, departmentAbbr) values (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
-                const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.noOfRegistrations,istTime,req.body.refundable,req.body.departmentAbbr]);
+                const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
                 await db_connection.query(`SELECT RELEASE_LOCK(?)`, [lockName]);
                 res.status(201).send({result : "Data Inserted Succesfully"});
             }
@@ -257,12 +258,12 @@ const { param } = require('../routes/userApp');
                     res.status(404).send({error : "User not found"})
                 }
                 else{
-
+                    console.log("User email : " + result[0].userEmail);
                     const token = await tokenGenerator({
                         userName : req.body.userName,
-                        userEmail : result.userEmail,
-                        name : result.name,
-                        managerPhoneNumber : result.phoneNumber,
+                        userEmail : result[0].userEmail,
+                        name : result[0].name,
+                        managerPhoneNumber : result[0].phoneNumber,
                         role : result[0].role
                     });
                     res.json({
