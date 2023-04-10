@@ -39,6 +39,8 @@ module.exports = {
                             userName : result[0].userName,
                             fullName : result[0].name,
                             phoneNumber : result[0].phoneNumber,
+                            role : result[0].role,
+                            department : result[0].departmentAbbr,
                             SECRET_TOKEN : token
                         
                     });
