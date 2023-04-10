@@ -202,7 +202,7 @@ const { param } = require('../routes/userApp');
            
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
-        else if(req.body.groupOrIndividual == 0 && (req.body.maxCount != 1 || req.body.minCount != 1 || req.body.minCount > req.body,maxCount))
+        else if((req.body.groupOrIndividual == 0 && (req.body.maxCount != 1 || req.body.maxCount != 1 ))|| req.body.minCount > req.body.maxCount)
         {
             res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
         }
@@ -377,7 +377,7 @@ const { param } = require('../routes/userApp');
         {
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
-        else if(req.body.groupOrIndividual == 0 && (req.body.maxCount != 1 || req.body.maxCount != 1 || req.body.minCount > req.body.maxCount))
+        else if((req.body.groupOrIndividual == 0 && (req.body.maxCount != 1 || req.body.maxCount != 1 ))|| req.body.minCount > req.body.maxCount)
         {
             res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
         }
