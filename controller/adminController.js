@@ -562,6 +562,10 @@ getEventsByDept : [
             fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
             res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
         }
+
+        finally {
+            await db_connection.release()
+        }
     }
 ],
 
@@ -585,6 +589,10 @@ getEventsByDate : [
             fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
             fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
             res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+        }
+
+        finally {
+            await db_connection.release()
         }
 
 
@@ -627,6 +635,9 @@ getTotalFee : [
             fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
             res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
         }
+        finally {
+           await db_connection.release()
+        }
     }
     }
 ],
@@ -668,6 +679,10 @@ getTotalRegs : [
             fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
             fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
             res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+        }
+
+        finally {
+            await db_connection.release()
         }
         }
     }
