@@ -1538,3 +1538,9 @@ ReferenceError: salt is not defined
 2023-04-10 16:01:27
 ReferenceError: salt is not defined
 
+2023-04-10 16:41:49
+TypeError: response.data.transaction_details.amt is not iterable
+
+2023-04-10 16:41:57
+TypeError: response.data.transaction_details is not iterable
+

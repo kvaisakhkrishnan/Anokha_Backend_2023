@@ -45,8 +45,10 @@ const checkPaymentStatus = async () => {
             };
 
             const response = await axios.post('https://info.payu.in/merchant/postservice?form=2', postData, options);
-            console.log(`statusCode: ${response.status}`);
-            console.log(`Received data: ${response.data.msg}`);
+            for(var individualdata of response.data.transaction_details)
+            {
+                console.log(individualdata);
+            }
             // Do something with the received data
 
         }
