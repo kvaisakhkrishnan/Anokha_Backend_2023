@@ -274,13 +274,15 @@ const { param } = require('../routes/userApp');
                         userEmail : result[0].userEmail,
                         name : result[0].name,
                         managerPhoneNumber : result[0].phoneNumber,
-                        role : result[0].role
+                        role : result[0].role,
+                        department : result[0].departmentAbbr
                     });
                     res.json({
                         
                             userName : result[0].userName,
                             fullName : result[0].name,
                             phoneNumber : result[0].phoneNumber,
+                            role : result[0].role,
                             SECRET_TOKEN : token
                         
                     });
@@ -524,18 +526,7 @@ const { param } = require('../routes/userApp');
 
 
 
-//     facultyAddsStudents : [tokenValidator, async (req, res) =>{
-//         if(req.authorization_tier == "FACCOORD"){
-//             if(req.userEmail == undefined ||
-//                 !validator.isEmail(req.userEmail) ||
-//                 //have to write code here.....
-//                 )
-            
-//     }
-// else{
-//     res.status(401).send({"error" : "You have no rights to be here!"})
-//     }
-//     }]
+
 
 getAllEvents : [tokenValidator, async (req, res) => {
     let db_connection = await db.promise().getConnection();
@@ -708,7 +699,50 @@ getTotalRegs : [
         }
         }
     }
-]
+],
+
+
+getTotalRevenue : [tokenValidator, async (req, res) => {
+    var searchString = "";
+   if(req.body.authorization_tier == "ADMIN"){
+    searchString = "select eventData.eventId, eventData.eventName, noOfRegistrations, departmentName, sum(fees) as revenue from registeredEvents left join eventData on eventData.eventId = registeredEvents.eventId  left join departmentData on eventData.departmentAbbr = departmentData.departmentAbbr group by eventData.eventId"
+    
+   }
+   if(req.body.authorization_tier== "DEPTHEAD")
+   {
+    searchString = "select eventData.eventId, eventData.eventName, noOfRegistrations, departmentData.departmentAbbr, departmentName, sum(fees) as revenue from registeredEvents left join eventData on eventData.eventId = registeredEvents.eventId  left join departmentData on eventData.departmentAbbr = departmentData.departmentAbbr group by eventData.eventId having departmentAbbr = ?"
+   }
+
+    const db_connection = await db.promise().getConnection();
+    try{
+        await db_connection.query('lock tables registeredEvents read, eventData read, departmentData read');
+        const [result] = await db_connection.query(searchString, [req.body.departmentAbbr]);
+        await db_connection.query('unlock tables');
+        res.send(result);
+    }
+    catch(err)
+    {
+        console.log(err);
+        const now = new Date();
+        now.setUTCHours(now.getUTCHours() + 5);
+        now.setUTCMinutes(now.getUTCMinutes() + 30);
+        const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+        fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+        fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+        res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+    }
+    finally{
+        await db_connection.release();
+    }
+
+}],
+
+
+
+
+
+
+
 
     
 }

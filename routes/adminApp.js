@@ -23,7 +23,7 @@ router.get('/getEventsByDept/:dept',adminController.getEventsByDept)
 //get events by date
 router.get('/getEventsByDate/:date',adminController.getEventsByDate)
 
-//router.post('/addStudentCoordinator')
+
 
 //for the security 
 router.get('/verifyUser/:userEmail',adminController.verifyUser);
@@ -34,6 +34,10 @@ router.post('/getStats/totalFee',adminController.getTotalFee);
 
 //Stats for total regs
 router.post('/getStats/totalRegs',adminController.getTotalRegs);
+
+
+router.post('/getStats/totalRevenue', adminController.getTotalRevenue);
+
 
 
 

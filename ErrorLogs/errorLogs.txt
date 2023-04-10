@@ -1544,3 +1544,231 @@ TypeError: response.data.transaction_details.amt is not iterable
 2023-04-10 16:41:57
 TypeError: response.data.transaction_details is not iterable
 
+2023-04-10 22:16:45
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:18:18
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:19:00
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:20:09
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:20:30
+2023-04-10 22:27:56
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:29:03
+TypeError: object is not iterable (cannot read property Symbol(Symbol.iterator))
+
+2023-04-10 22:43:17
+2023-04-10 22:43:42
+TypeError: object is not iterable (cannot read property Symbol(Symbol.iterator))
+
+TypeError: object is not iterable (cannot read property Symbol(Symbol.iterator))
+
+2023-04-10 22:43:46
+2023-04-10 22:44:03
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:45:41
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:45:49
+TypeError: object is not iterable (cannot read property Symbol(Symbol.iterator))
+
+2023-04-10 22:46:30
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:46:44
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:47:13
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:48:01
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 22:48:13
+2023-04-10 23:03:13
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:18:13
+2023-04-10 23:26:36
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:26:37
+Error: Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'anokha.registeredEvents.userEmail' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+
+2023-04-10 23:27:40
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:27:42
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'sum(fees) as revenue from registeredEvents left join eventData on eventData.even' at line 1
+
+2023-04-10 23:27:43
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'sum(fees) as revenue from registeredEvents left join eventData on eventData.even' at line 1
+
+2023-04-10 23:27:50
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'sum(fees) as revenue from registeredEvents left join eventData on eventData.even' at line 1
+
+2023-04-10 23:27:52
+2023-04-10 23:28:01
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:28:07
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:32:36
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'group by eventData.eventId' at line 1
+
+2023-04-10 23:33:19
+2023-04-10 23:34:42
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:34:43
+Error: Table 'departmentData' was not locked with LOCK TABLES
+
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:35:07
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:35:15
+2023-04-10 23:35:38
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:37:55
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:41:39
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:44:24
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:44:38
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:44:43
+2023-04-10 23:45:01
+Error: Query was empty
+
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:46:12
+Error: Query was empty
+
+2023-04-10 23:46:14
+2023-04-10 23:47:09
+Error: Query was empty
+
+2023-04-10 23:47:47
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+Error: Query was empty
+
+2023-04-10 23:47:49
+2023-04-10 23:48:14
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:49:07
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:49:24
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:50:40
+Error: Query was empty
+
+2023-04-10 23:51:07
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:51:10
+Error: Unknown column 'eventData.departmentAbbr' in 'having clause'
+
+2023-04-10 23:51:11
+Error: Unknown column 'eventData.departmentAbbr' in 'having clause'
+
+2023-04-10 23:51:28
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:51:29
+Error: Unknown column 'departmentAbbr' in 'having clause'
+
+2023-04-10 23:52:11
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:52:14
+Error: Unknown column 'departmentAbbr' in 'having clause'
+
+2023-04-10 23:53:25
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:54:16
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:54:17
+Error: Unknown column 'eventdata.departmentAbbr' in 'having clause'
+
+2023-04-10 23:54:27
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:54:29
+Error: Unknown column 'eventData.departmentAbbr' in 'having clause'
+
+2023-04-10 23:54:34
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:54:48
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:54:58
+2023-04-10 23:55:27
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:56:11
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:56:57
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:57:45
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:57:53
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:58:04
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-10 23:58:17
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-11 00:00:11
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-11 00:00:34
+TypeError: Cannot read properties of undefined (reading 'amt')
+
+2023-04-11 00:01:58
+TypeError: Cannot read properties of undefined (reading 'amt')
+

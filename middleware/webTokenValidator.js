@@ -27,6 +27,7 @@ async function tokenValidator(req, res, next){
                 req.body.userName = payload["userName"];
                 req.body.userEmail = payload["userEmail"];
                 req.body.authorization_tier = payload["role"];
+                req.body.departmentAbbr = payload["department"];
             }
             next();
             return;
