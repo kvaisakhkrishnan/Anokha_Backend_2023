@@ -366,7 +366,7 @@ module.exports = {
                     db_connection.query(`delete from OTP where userEmail = ?`,[userEmail]);
                     await db_connection.query("unlock tables");
                     welcomeMailer(result[0].fullName, userEmail);
-                    res.status(200).send({"result" : "success"})
+                    res.status(201).send({"result" : "success"})
                 }
                 else{
                     res.status(400).send({"error" : "Cannot verify please try again"})
