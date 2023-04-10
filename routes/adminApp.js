@@ -36,7 +36,7 @@ router.post('/getStats/totalFee',adminController.getTotalFee);
 router.post('/getStats/totalRegs',adminController.getTotalRegs);
 
 
-router.post('/getStats/totalRevenue', adminController.getTotalRevenue);
+router.get('/getStats/totalRevenue', adminController.getTotalRevenue);
 
 
 
