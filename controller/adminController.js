@@ -435,68 +435,70 @@ const { param } = require('../routes/userApp');
 
         try {
             var a = null;
-        db.query(sql_q,[req.params.userEmail],(err,result) => {
-            if(err) {
+            await db_connection.query('lock tables userdata read');
+            const [result] = await db_connection.query(sql_q,[req.params.userEmail]);
+            await db_connection.query('unlock tables');
+            if(result.length == 0) {
                 res.send("Error");
             }
             else {
                 
                 var entry;
                 let sql_entry = `select inside from visitsdata where userEmail = ? order by visit_id desc LIMIT 1;`;
-                db.query(sql_entry,[req.params.userEmail],(err,result_entry) => {
-                    if(err) {
+                await db_connection.query('lock tables visitsdata')
+                const [result1] = await db_connection.query(sql_entry,[req.params.userEmail]);
+                await db_connection.query('unlock tables');
+                    if(result1.length == 0) {
                         console.log(err);
                     }
                     else {
                     
-                    entry = result_entry;
+                             entry = result_entry;
                      
-                let sql2 = `insert into visitsdata values(?,?,?,?)`;
+                            let sql2 = `insert into visitsdata values(?,?,?,?)`;
         
-                var today = new Date();
-                var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                var dateTime = date+' '+time;
-                var inside = 1;
+                            var today = new Date();
+                            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                            var dateTime = date+' '+time;
+                            var inside = 1;
                 
                
-                if(entry.length == 0) {
-                    inside = 1;
-                }
-                else {
-                    console.log("hello");
-                    inside = 1 - entry[0]["inside"]
-                    var params;
-                if(inside == 1) {
-                    params = [req.params.userEmail,dateTime,null,inside];
-                }
-                else {
-                    params = [req.params.userEmail,null,dateTime,inside];
-                }
-                
-                db.query(sql2,params,(err,result2) => {
-                    if(err || result2.affectedRows == 0) {
-                        console.log(err);
-                        res.send([])
-                    }
-                    else {
+                            if(entry.length == 0) {
+                                inside = 1;
+                            }
+                            else {
+                    
+                                inside = 1 - entry[0]["inside"]
+                                var params;
+                                if(inside == 1) {
+                                    params = [req.params.userEmail,dateTime,null,inside];
+                                }
+                                 else {
+                                    params = [req.params.userEmail,null,dateTime,inside];
+                                    }
+                                await db_connection.query('lock tables visitsdata');
+                                const [result3] = await db_connection.query(sql2,params);
+                                await db_connection.query('unlock tables');
+                    
+                                if(result3.affectedRows == 0) {
+                                    console.log(err);
+                                    res.send([])
+                                }
+                                else {
                         
-                        res.send(result);
+                                    res.send(result);
+                                }
+                            }
+
+                        }
+                
+                
                     }
-                });
                 }
-                
-                
-                    }
-                })
 
                
-                
-            }
-            
-        })
-
-    }
+   
 
 
     catch(err)
