@@ -28,7 +28,7 @@ const checkPaymentStatus = async () => {
             hash.update(text);
             hashedData = hash.digest('hex');
 
-            console.log(transactionSet);
+            //console.log(transactionSet);
 
             const postData = querystring.stringify({
                 key: key,
@@ -45,10 +45,7 @@ const checkPaymentStatus = async () => {
             };
 
             const response = await axios.post('https://info.payu.in/merchant/postservice?form=2', postData, options);
-            for(var txid of result)
-            {
-                console.log(response.data.transaction_details.txid.amt);
-            }
+            console.log(response.data);
 
             
             // Do something with the received data
