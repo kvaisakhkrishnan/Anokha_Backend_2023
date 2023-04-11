@@ -73,7 +73,6 @@ const checkPaymentStatus = async () => {
                             await db_connection.query('lock tables transactions read');
                             const [output] = await db_connection.query('select * from transactions where transactionId = ?', [response.data.transaction_details[individualTransaction].txnid])
                             await db_connection.query('unlock tables');
-                            console.log(output);
                             if(output[0].productId == "P")
                             {
                                 const conn = await db.promise().getConnection();
@@ -108,7 +107,7 @@ const checkPaymentStatus = async () => {
                                 }
                             }
                             else{
-
+                                console.log("HERE";)
                                 var eventId = output[0].productId.substring(1);
                                 console.log(output[0].productId);
                                 const conn = await db.promise().getConnection();
