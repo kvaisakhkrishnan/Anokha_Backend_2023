@@ -269,7 +269,7 @@ const { param } = require('../routes/userApp');
                     res.status(404).send({error : "User not found"})
                 }
                 else{
-                    console.log(result[0].departmentAbbr);
+                   
                     const token = await tokenGenerator({
                         userName : req.body.userName,
                         userEmail : result[0].userEmail,
