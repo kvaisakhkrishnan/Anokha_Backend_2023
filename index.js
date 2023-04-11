@@ -75,7 +75,7 @@ const PORT = 3000;
         
             //Please be careful. Dont run this command if you have data in backend.
            //initializeStep1();
-            initializeStep2();
+            //initializeStep2();
       
         // Fork workers
         for (let i = 0; i < numberOfSlaves; i++) {
