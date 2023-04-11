@@ -198,7 +198,8 @@ const { param } = require('../routes/userApp');
             req.body.url == undefined
         )
         {
-            console.log(req.body.userEmail);
+            console.log(req.body);
+
            
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
