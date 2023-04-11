@@ -107,7 +107,6 @@ const checkPaymentStatus = async () => {
                                 }
                             }
                             else{
-                                console.log("HERE";)
                                 var eventId = output[0].productId.substring(1);
                                 console.log(output[0].productId);
                                 const conn = await db.promise().getConnection();
@@ -119,6 +118,7 @@ const checkPaymentStatus = async () => {
                                     await conn.query('lock tables registeredEvents write');
                                     const [out] = conn.query('insert into registeredEvents (userEmail, eventId, timeStamp, refundRequested) values (?,?,?,?)', [output[0].userEmail, eventId, istTime, 0])
                                     await conn.query('unlock tables');
+                                    console.log(out);
                                 }
                                 catch(err) {
                                     console.log(err);
