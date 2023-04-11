@@ -110,6 +110,7 @@ const checkPaymentStatus = async () => {
                             else{
 
                                 var eventId = output[0].productId.substring(1);
+                                console.log(output[0].productId);
                                 const conn = await db.promise().getConnection();
                                 try{
                                     const now = new Date();
