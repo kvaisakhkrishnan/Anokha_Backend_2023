@@ -139,7 +139,9 @@ const checkPaymentStatus = async () => {
                                     await conn.query('lock tables registeredEvents write');
                                     const [out] = await conn.query('insert into registeredEvents (userEmail, eventId, timeStamp, refundRequested) values (?,?,?,?)', [output[0].userEmail, eventId, istTime, 0])
                                     await conn.query('unlock tables');
-                                  
+                                    await conn.query('lock tables eventData write');
+                                    const [out2] = await conn.query('update eventData set noOfRegistrations = noOfRegistrations + 1 where eventId = ?', [eventId]);
+                                    await conn.query('unlock tables');
                                 }
                                 catch(err) {
                                     console.log(err);
