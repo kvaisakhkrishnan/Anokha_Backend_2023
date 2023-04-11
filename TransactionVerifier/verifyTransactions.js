@@ -116,9 +116,9 @@ const checkPaymentStatus = async () => {
                                     now.setUTCHours(now.getUTCHours() + 5);
                                     now.setUTCMinutes(now.getUTCMinutes() + 30);
                                     const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                                    // await conn.query('lock tables registeredEvents write');
-                                    // const [out] = conn.query('insert into registeredEvents (userEmail, eventId, timeStamp, refundRequested) values (?,?,?,?)', [output[0].userEmail, eventId, istTime, 0])
-                                    // await conn.query('unlock tables');
+                                    await conn.query('lock tables registeredEvents write');
+                                    const [out] = await conn.query('insert into registeredEvents (userEmail, eventId, timeStamp, refundRequested) values (?,?,?,?)', [output[0].userEmail, eventId, istTime, 0])
+                                    await conn.query('unlock tables');
                                   
                                 }
                                 catch(err) {
