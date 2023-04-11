@@ -746,13 +746,14 @@ module.exports = {
     }],
 
     successRedirect :async (req,res) => {
-        res.status(302).redirect("https://anokha.amrita.edu/events");
+        res.status(302).redirect("https://anokha.amrita.edu/payment/1");
+        
     },
 
 
 
     failureRedirect : async (req,res) => {
-        res.status(302).redirect("https://anokha.amrita.edu/events");
+        res.status(302).redirect("https://anokha.amrita.edu/payment/0");
     }
     
 
