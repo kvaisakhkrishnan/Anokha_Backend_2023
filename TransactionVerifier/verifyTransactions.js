@@ -58,13 +58,13 @@ const checkPaymentStatus = async () => {
                     const db_connection = await transactions_db.promise().getConnection();
                     try{
                         await db_connection.query('lock tables transactions write');
-                        const [result] = await db_connection.query('update transactions set transactionStatus = "SUCCESS" where transactiondId = ? and amount = ?', [response.data.transaction_details[individualTransaction].txnid, amount]);
+                        const [result] = await db_connection.query('update transactions set transactionStatus = "SUCCESS" where transactionId = ? and amount = ?', [response.data.transaction_details[individualTransaction].txnid, amount]);
                         await db_connection.query('unlock tables');
                         console.log(result);
                         if(result.affectedRows == 0)
                         {
                             await db_connection.query('lock tables transactions write');
-                            const [result] = await db_connection.query('update transactions set transactionStatus = "MALPERROR" where transactiondId = ?', [response.data.transaction_details[individualTransaction].txnid]);
+                            const [result] = await db_connection.query('update transactions set transactionStatus = "MALPERROR" where transactionId = ?', [response.data.transaction_details[individualTransaction].txnid]);
                             await db_connection.query('unlock tables');
                         }
                         else{
