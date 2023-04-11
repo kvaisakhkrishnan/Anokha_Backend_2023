@@ -23,6 +23,8 @@ router.get('/events/nextEvent', userController.getNextEvent);
 
 router.get('/events/myRegistered', userController.myEvents);
 
+router.post('/forgotPassword/verifyOtp', userController.verifyResetOtp);
+
 
 
 

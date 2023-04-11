@@ -754,7 +754,47 @@ module.exports = {
 
     failureRedirect : async (req,res) => {
         res.status(302).redirect("https://anokha.amrita.edu/payment/0");
-    }
+    },
+
+    verifyResetOtp :[webtokenValidator, async (req, res) => {
+        if(req.body.userEmail == undefined || 
+            !validator.isEmail(req.body.userEmail) ||
+            req.body.otp == undefined)
+            {
+                res.status(400).send({"error" : "We are much ahead of you..."});
+                return;
+            }
+            else{
+                const db_connection = await db.promise().getConnection();
+                try{
+                    await db_connection.query("lock tables resetOtp write");
+                    const [result] = await db_connection.query("delete from resetOtp where userEmail = ? and otp = ?", [req.body.userEmail, req.body.otp]);
+                    await db_connection.query("unlock tables");
+                    if(result.affectedRows == 0)
+                    {
+                        res.status(404).send({"error" : "data not found"});
+                    }
+                    else{
+                        res.status(200).send({"message" : "verified"});
+                    }
+                }
+                catch(err) {
+                    console.log(err);
+                    const now = new Date();
+                    now.setUTCHours(now.getUTCHours() + 5);
+                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                    fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                    fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                    res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                }
+        
+                finally {
+                    db_connection.release();
+                  }
+            }
+    }]
+
     
 
 }
