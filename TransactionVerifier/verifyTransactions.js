@@ -112,14 +112,14 @@ const checkPaymentStatus = async () => {
                                 const conn = await db.promise().getConnection();
                                 try{
                                     console.log("THIS");
-                                    // const now = new Date();
-                                    // now.setUTCHours(now.getUTCHours() + 5);
-                                    // now.setUTCMinutes(now.getUTCMinutes() + 30);
-                                    // const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                                    const now = new Date();
+                                    now.setUTCHours(now.getUTCHours() + 5);
+                                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                                     // await conn.query('lock tables registeredEvents write');
                                     // const [out] = conn.query('insert into registeredEvents (userEmail, eventId, timeStamp, refundRequested) values (?,?,?,?)', [output[0].userEmail, eventId, istTime, 0])
                                     // await conn.query('unlock tables');
-                                    // console.log(out);
+                                  
                                 }
                                 catch(err) {
                                     console.log(err);
