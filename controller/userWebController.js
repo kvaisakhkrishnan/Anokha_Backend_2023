@@ -12,6 +12,7 @@ const fs = require('fs');
 const transactionTokenGenerator = require('../middleware/transactionTokenGenerator');
 const transactionTokenVerifier = require('../middleware/transactionTokenVerifier');
 const crypto = require('crypto');
+const resetMailer = require('../Mailer/resetOtp');
 
 module.exports = {
     getAllEvents :  async (req, res) => {
