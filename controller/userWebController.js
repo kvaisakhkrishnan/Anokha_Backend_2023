@@ -741,7 +741,17 @@ module.exports = {
         finally {
             await db_connection.release();
           }
-    }]
+    }],
+
+    successRedirect :async (req,res) => {
+        res.status(302).redirect("https://anokha.amrita.edu/events");
+    },
+
+
+
+    failureRedirect : async (req,res) => {
+        res.status(302).redirect("https://anokha.amrita.edu/events");
+    }
     
 
 }

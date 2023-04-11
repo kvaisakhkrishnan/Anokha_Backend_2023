@@ -46,6 +46,13 @@ router.post('/transaction/moveToTransaction', userWebController.moveToTransactio
 
 router.get('/events/myRegistered', userWebController.myEvents);
 
+//redirect to a success page
+router.post("/success",userWebController.successRedirect);
+
+// redirect to a failure page
+
+router.post("/failure",userWebController.failureRedirect);
+
 
 module.exports = router;
 
