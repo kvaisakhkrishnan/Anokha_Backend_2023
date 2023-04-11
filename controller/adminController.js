@@ -284,7 +284,8 @@ const { param } = require('../routes/userApp');
                             fullName : result[0].name,
                             phoneNumber : result[0].phoneNumber,
                             role : result[0].role,
-                            SECRET_TOKEN : token
+                            SECRET_TOKEN : token,
+                            department : result[0].departmentAbbr
                         
                     });
                 
