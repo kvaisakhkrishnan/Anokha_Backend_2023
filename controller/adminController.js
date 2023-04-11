@@ -707,7 +707,7 @@ getTotalRevenue : [tokenValidator, async (req, res) => {
    }
    if(req.body.authorization_tier== "DEPTHEAD")
    {
-    searchString = "select eventData.eventId, eventData.eventName, noOfRegistrations, departmentData.departmentAbbr, departmentName, sum(fees) as revenue from registeredEvents left join eventData on eventData.eventId = registeredEvents.eventId  left join departmentData on eventData.departmentAbbr = departmentData.departmentAbbr group by eventData.eventId having departmentAbbr = ?"
+    searchString = "select eventData.eventId, eventData.eventName, noOfRegistrations,totalNumberOfSeats, departmentData.departmentAbbr, departmentName, sum(fees) as revenue from registeredEvents left join eventData on eventData.eventId = registeredEvents.eventId  left join departmentData on eventData.departmentAbbr = departmentData.departmentAbbr group by eventData.eventId having departmentAbbr = ?"
    }
 
     const db_connection = await db.promise().getConnection();
