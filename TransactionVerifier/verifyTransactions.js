@@ -99,7 +99,7 @@ const checkPaymentStatus = async () => {
                                     const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                                     fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
                                     fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                                    res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                                    console.log("Contact DB Admin if you see this message");
                                 }
                     
                                 finally {
@@ -127,7 +127,7 @@ const checkPaymentStatus = async () => {
                                     const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                                     fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
                                     fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                                    res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                                    console.log("Contact DB Admin if you see this message");
                                 }
                     
                                 finally {
@@ -145,7 +145,7 @@ const checkPaymentStatus = async () => {
                         const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                         fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
                         fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                        res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                        console.log("Contact DB Admin if you see this message");
                     }
         
                     finally {
