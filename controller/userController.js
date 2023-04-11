@@ -787,6 +787,7 @@ module.exports = {
                         await db_connection.query("insert into ResetOtp (userEmail, otp) values(?, ?)", [req.body.userEmail,otpGenerated ]);
                         await db_connection.query("unlock tables");
                         resetMailer(result[0].fullName, req.body.userEmail, otpGenerated);
+                        res.status(200).send({"message" : "otp send"});
                     }
                 }
                 catch(err)
