@@ -49,6 +49,7 @@ const checkPaymentStatus = async () => {
             const response = await axios.post('https://info.payu.in/merchant/postservice?form=2', postData, options);
              for (individualTransaction in response.data.transaction_details)
              {
+                console.log("HERE");
                 if(response.data.transaction_details[individualTransaction].status == 'failure')
                 {
                        
@@ -108,7 +109,6 @@ const checkPaymentStatus = async () => {
                             }
                             else{
                                 var eventId = output[0].productId.substring(1);
-                                console.log(output[0].productId);
                                 const conn = await db.promise().getConnection();
                                 try{
                                     const now = new Date();
