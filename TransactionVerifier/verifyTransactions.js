@@ -60,7 +60,7 @@ const checkPaymentStatus = async () => {
                         await db_connection.query('lock tables transactions write');
                         const [result] = await db_connection.query('update transactions set transactionStatus = "SUCCESS" where transactiondId = ? and amount = ?', [individualTransaction, amount]);
                         await db_connection.query('unlock tables');
-
+                        console.log(result);
                         if(result.affectedRows == 0)
                         {
                             await db_connection.query('lock tables transactions write');
@@ -68,6 +68,8 @@ const checkPaymentStatus = async () => {
                             await db_connection.query('unlock tables');
                         }
                         else{
+
+
 
                         }
                     }
