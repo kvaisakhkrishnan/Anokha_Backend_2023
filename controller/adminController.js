@@ -277,7 +277,7 @@ const { param } = require('../routes/userApp');
                         name : result[0].name,
                         managerPhoneNumber : result[0].phoneNumber,
                         role : result[0].role,
-                        department : result[0].departmentAbbr
+                        departmentAbbr : result[0].departmentAbbr
                     });
                     res.json({
                         
