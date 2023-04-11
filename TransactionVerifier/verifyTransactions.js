@@ -46,9 +46,20 @@ const checkPaymentStatus = async () => {
 
             const response = await axios.post('https://info.payu.in/merchant/postservice?form=2', postData, options);
             console.log(response.data);
+             for (individualTransaction in response.data.transaction_details)
+             {
+                if(response.data.transaction_details[individualTransaction].status == 'failure')
+                {
+                        
+                }
+                else if(response.data.transaction_details[individualTransaction].status == 'success')
+                {
 
+                }
+
+             }
             
-            // Do something with the received data
+            
 
         }
 
