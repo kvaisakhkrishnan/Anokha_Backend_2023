@@ -771,7 +771,7 @@ module.exports = {
             }
 
         else{
-                const db_connection = await db.promise().gerConnection();
+                const db_connection = await db.promise().getConnection();
                 try{
                     await db_connection.query("lock tables user userdata read");
                     const [result] = await db_connection.query("select * from userdata where userEmail = ?", [res.body.userEmail]);
