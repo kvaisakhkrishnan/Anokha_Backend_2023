@@ -220,6 +220,53 @@ module.exports = {
         
     },
 
+    forgotPassword : async (req, res) => {
+
+       
+        if(req.body.userEmail == undefined ||
+            !validator.isEmail(req.body.userEmail))
+            {
+                res.status(400).send({"error" : "We are much ahead of you..."});
+                return;
+            }
+
+        else{
+                const db_connection = await db.promise().gerConnection();
+                try{
+                    await db_connection.query("lock tables user userdata read");
+                    const [result] = await db_connection.query("select * from userdata where userEmail = ?", [res.body.userEmail]);
+                    await db_connection.query("unlock tables");
+                    if(result.length == 0)
+                    {
+                        res.status(404).send({"error" : "User not found"});
+                    }
+                    else{
+                        const otpGenerated = randonNumberGenerator();
+                        await db_connection.query("lock tables ResetOtp write");
+                        await db_connection.query("delete from ResetOtp where userEmail = ?", [req.body.userEmail]);
+                        await db_connection.query("insert into ResetOtp (userEmail, otp) values(?, ?)", [req.body.userEmail,otpGenerated ]);
+                        await db_connection.query("unlock tables");
+                        resetMailer(result[0].fullName, res.body.userEmail, otpGenerated);
+                    }
+                }
+                catch(err)
+                {
+                        const now = new Date();
+                        now.setUTCHours(now.getUTCHours() + 5);
+                        now.setUTCMinutes(now.getUTCMinutes() + 30);
+                        const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                        fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                        fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                        res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                }
+            finally{
+                await db_connection.release();
+            }
+
+        }
+   
+    },
+
     getUserDetails : [
         webtokenValidator,async (req,res) => {
             if(validator.isEmail(req.body.userEmail))
