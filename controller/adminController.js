@@ -386,7 +386,7 @@ const { param } = require('../routes/userApp');
             const db_connection = await db.promise().getConnection();
             try{
                 await db_connection.query('lock tables eventData write');
-                const [result] = db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userEmail = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userEmail]);
+                const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userEmail = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userEmail]);
                 await db_connection.query('unlock tables');
                 if(result.affectedRows == 0)
                 {
