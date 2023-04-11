@@ -742,7 +742,7 @@ deleteEvent : [tokenValidator, async(req, res) => {
     const db_connection = await db.promise().getConnection();
     try{
         await db_connection.query("lock tables eventData write");
-        const [result] = await db_connection.query('delete from eventData where eventId = ? and eventManagerEmail = ?', [req.body.eventId, req.body.userEmail]);
+        const [result] = await db_connection.query('delete from eventData where eventId = ? and userEmail = ?', [req.body.eventId, req.body.userEmail]);
         await db_connection.query("unlock tables");
         if(result.affectedRows == 0)
         {
