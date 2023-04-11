@@ -107,6 +107,7 @@ const checkPaymentStatus = async () => {
                             //     }
                             // }
                             if(true){
+                                console.log("THIS");
                                 var eventId = output[0].productId.substring(1);
                                 const conn = await db.promise().getConnection();
                                 try{
