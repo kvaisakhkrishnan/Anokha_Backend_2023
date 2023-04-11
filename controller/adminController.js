@@ -198,7 +198,8 @@ const { param } = require('../routes/userApp');
             req.body.url == undefined
         )
         {
-            console.log(req.body.userEmail);
+            console.log(req.body);
+
            
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
@@ -276,7 +277,7 @@ const { param } = require('../routes/userApp');
                         name : result[0].name,
                         managerPhoneNumber : result[0].phoneNumber,
                         role : result[0].role,
-                        department : result[0].departmentAbbr
+                        departmentAbbr : result[0].departmentAbbr
                     });
                     res.json({
                         

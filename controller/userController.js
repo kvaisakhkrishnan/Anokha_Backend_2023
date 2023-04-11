@@ -774,7 +774,7 @@ module.exports = {
                 const db_connection = await db.promise().getConnection();
                 try{
                     await db_connection.query("lock tables userdata read");
-                    const [result] = await db_connection.query("select * from userdata where userEmail = ?", [res.body.userEmail]);
+                    const [result] = await db_connection.query("select * from userdata where userEmail = ?", [req.body.userEmail]);
                     await db_connection.query("unlock tables");
                     if(result.length == 0)
                     {
@@ -786,7 +786,8 @@ module.exports = {
                         await db_connection.query("delete from ResetOtp where userEmail = ?", [req.body.userEmail]);
                         await db_connection.query("insert into ResetOtp (userEmail, otp) values(?, ?)", [req.body.userEmail,otpGenerated ]);
                         await db_connection.query("unlock tables");
-                        resetMailer(result[0].fullName, res.body.userEmail, otpGenerated);
+                        resetMailer(result[0].fullName, req.body.userEmail, otpGenerated);
+                        res.status(200).send({"message" : "otp send"});
                     }
                 }
                 catch(err)

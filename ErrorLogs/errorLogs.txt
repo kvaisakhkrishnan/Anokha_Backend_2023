@@ -3350,3 +3350,51 @@ Error: Table 'anokha_transactions.transactions' doesn't exist
 Error: Column 'departmentAbbr' cannot be null
 
 2023-04-11 16:53:03
+2023-04-11 21:06:29
+Error: Table 'anokha.user' doesn't exist
+
+TypeError: Cannot read properties of undefined (reading 'userEmail')
+
+2023-04-11 21:11:18
+2023-04-11 21:11:33
+TypeError: Cannot read properties of undefined (reading 'userEmail')
+
+2023-04-11 21:11:36
+Error: Cannot delete or update a parent row: a foreign key constraint fails (`anokha`.`registeredevents`, CONSTRAINT `registeredevents_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `eventdata` (`eventId`))
+
+2023-04-11 21:13:49
+TypeError: Cannot read properties of undefined (reading 'userEmail')
+
+2023-04-11 21:13:50
+TypeError: Cannot read properties of undefined (reading 'userEmail')
+
+TypeError: Cannot read properties of undefined (reading 'userEmail')
+
+2023-04-11 21:16:28
+2023-04-11 21:16:30
+Error: Cannot delete or update a parent row: a foreign key constraint fails (`anokha`.`registeredevents`, CONSTRAINT `registeredevents_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `eventdata` (`eventId`))
+
+2023-04-11 21:16:34
+TypeError: Cannot read properties of undefined (reading 'userEmail')
+
+ReferenceError: resetMailer is not defined
+
+2023-04-11 21:18:21
+2023-04-11 21:19:53
+TypeError: Cannot read properties of undefined (reading 'userEmail')
+
+Error: Cannot delete or update a parent row: a foreign key constraint fails (`anokha`.`registeredevents`, CONSTRAINT `registeredevents_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `eventdata` (`eventId`))
+
+2023-04-11 21:22:26
+2023-04-11 21:29:48
+Error: Cannot delete or update a parent row: a foreign key constraint fails (`anokha`.`registeredevents`, CONSTRAINT `registeredevents_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `eventdata` (`eventId`))
+
+Error: Cannot delete or update a parent row: a foreign key constraint fails (`anokha`.`registeredevents`, CONSTRAINT `registeredevents_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `eventdata` (`eventId`))
+
+2023-04-11 21:30:37
+Error: Cannot delete or update a parent row: a foreign key constraint fails (`anokha`.`registeredevents`, CONSTRAINT `registeredevents_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `eventdata` (`eventId`))
+
+2023-04-11 21:30:48
+2023-04-11 21:33:51
+Error: Cannot delete or update a parent row: a foreign key constraint fails (`anokha`.`registeredevents`, CONSTRAINT `registeredevents_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `eventdata` (`eventId`))
+
