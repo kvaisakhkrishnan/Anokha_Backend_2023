@@ -248,7 +248,7 @@ module.exports = {
                         await db_connection.query("insert into ResetOtp (userEmail, otp) values(?, ?)", [req.body.userEmail,otpGenerated ]);
                         await db_connection.query("unlock tables");
                         resetMailer(result[0].fullName, req.body.userEmail, otpGenerated);
-                        const token = await tokenGenerator({
+                        const token = await webtokenGenerator({
                             userEmail : result[0].userEmail,
                             fullName : result[0].fullName,
                             collegeName : result[0].collegeName,
