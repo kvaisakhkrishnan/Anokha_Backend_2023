@@ -56,6 +56,7 @@ const checkPaymentStatus = async () => {
                 else if(response.data.transaction_details[individualTransaction].status == 'success')
                 {
                     const amount = response.data.transaction_details[individualTransaction].amt;
+                    console.log(amount);
                     const db_connection = await transactions_db.promise().getConnection();
                     try{
                         await db_connection.query('lock tables transactions write');
