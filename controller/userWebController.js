@@ -13,6 +13,8 @@ const transactionTokenGenerator = require('../middleware/transactionTokenGenerat
 const transactionTokenVerifier = require('../middleware/transactionTokenVerifier');
 const crypto = require('crypto');
 const resetMailer = require('../Mailer/resetOtp');
+const resetPasswordGenerator = require('../middleware/otpResetGenerator');
+const resetPasswordValidator = require('../middleware/otpResetValidator');
 
 module.exports = {
     getAllEvents :  async (req, res) => {
@@ -784,7 +786,8 @@ module.exports = {
                         res.status(404).send({"error" : "data not found"});
                     }
                     else{
-                        res.status(200).send({"message" : "verified"});
+                        const secret = await resetPasswordGenerator({"userEmail" : req.body.userEmail})
+                        res.status(200).send({"token" : secret});
                     }
                 }
                 catch(err) {
@@ -804,7 +807,7 @@ module.exports = {
             }
     }],
 
-    newPassword : [webtokenValidator, async(req, res) => {
+    newPassword : [resetPasswordValidator, async(req, res) => {
         if(req.body.userEmail == undefined || 
             !validator.isEmail(req.body.userEmail) ||
             req.body.newPassword == undefined)
@@ -815,15 +818,15 @@ module.exports = {
             else{
                 const db_connection = await db.promise().getConnection();
                 try{
-                    await db_connection.query("lock tables  write");
-                    const [result] = await db_connection.query("delete from resetOtp where userEmail = ? and otp = ?", [req.body.userEmail, req.body.otp]);
+                    await db_connection.query("lock tables userData write");
+                    const [result] = await db_connection.query("update userData set password = ? where userEmail = ?", [req.body.newPassword, req.body.userEmail]);
                     await db_connection.query("unlock tables");
                     if(result.affectedRows == 0)
                     {
                         res.status(404).send({"error" : "data not found"});
                     }
                     else{
-                        res.status(200).send({"message" : "verified"});
+                        res.status(200).send({"message" : "Done"});
                     }
                 }
                 catch(err) {

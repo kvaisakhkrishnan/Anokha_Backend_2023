@@ -13,6 +13,8 @@ const crypto = require('crypto');
 const request = require('request');
 const transactionTokenGenerator = require('../middleware/transactionTokenGenerator');
 const transactionTokenVerifier = require('../middleware/transactionTokenVerifier');
+const resetPasswordGenerator = require('../middleware/otpResetGenerator');
+const resetPasswordValidator = require('../middleware/otpResetValidator');
 module.exports = {
 
 
@@ -949,7 +951,47 @@ module.exports = {
                         res.status(404).send({"error" : "data not found"});
                     }
                     else{
-                        res.status(200).send({"message" : "verified"});
+                        const secret = await resetPasswordGenerator({"userEmail" : req.body.userEmail})
+                        res.status(200).send({"token" : secret});
+                    }
+                }
+                catch(err) {
+                    console.log(err);
+                    const now = new Date();
+                    now.setUTCHours(now.getUTCHours() + 5);
+                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                    fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                    fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                    res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                }
+        
+                finally {
+                    db_connection.release();
+                  }
+            }
+    }],
+
+    newPassword : [resetPasswordValidator, async(req, res) => {
+        if(req.body.userEmail == undefined || 
+            !validator.isEmail(req.body.userEmail) ||
+            req.body.newPassword == undefined)
+            {
+                res.status(400).send({"error" : "We are much ahead of you..."});
+                return;
+            }
+            else{
+                const db_connection = await db.promise().getConnection();
+                try{
+                    await db_connection.query("lock tables userData write");
+                    const [result] = await db_connection.query("update userData set password = ? where userEmail = ?", [req.body.newPassword, req.body.userEmail]);
+                    await db_connection.query("unlock tables");
+                    if(result.affectedRows == 0)
+                    {
+                        res.status(404).send({"error" : "data not found"});
+                    }
+                    else{
+                        res.status(200).send({"message" : "Done"});
                     }
                 }
                 catch(err) {
@@ -968,6 +1010,8 @@ module.exports = {
                   }
             }
     }]
+
+
 
     
     
