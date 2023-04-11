@@ -723,7 +723,7 @@ module.exports = {
                     await transaction_db_connection.query("lock tables transactions write");
                     if(req.body.productId[0] == "E")
                     {
-                        await transaction_db_connection.query("insert into transactions (transactionId, productId, userEmail, senderName, eventIdOrPassportId, amount, timeStamp, transactionStatus, address, city, state, zipcode, country, phoneNumber) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [txid, req.body.productId.substring(2,req.body.productId.length), req.body.userEmail, req.body.firstName,'EVENT' , amount, istTime, 'INITIATED', req.body.address, req.body.city, req.body.state, req.body.zipcode, req.body.country, req.body.phoneNumber]);
+                        await transaction_db_connection.query("insert into transactions (transactionId, productId, userEmail, senderName, eventIdOrPassportId, amount, timeStamp, transactionStatus, address, city, state, zipcode, country, phoneNumber) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [txid, req.body.productId.substring(1,req.body.productId.length), req.body.userEmail, req.body.firstName,'EVENT' , amount, istTime, 'INITIATED', req.body.address, req.body.city, req.body.state, req.body.zipcode, req.body.country, req.body.phoneNumber]);
 
                     }
                     else{

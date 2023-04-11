@@ -50,10 +50,43 @@ const checkPaymentStatus = async () => {
              {
                 if(response.data.transaction_details[individualTransaction].status == 'failure')
                 {
-                        
+                       
                 }
                 else if(response.data.transaction_details[individualTransaction].status == 'success')
                 {
+                    const amount = response.data.transaction_details[individualTransaction].amt;
+                    const db_connection = await transactions_db.promise().getConnection();
+                    try{
+                        await db_connection.query('lock tables transactions write');
+                        const [result] = await db_connection.query('update transactions set transactionStatus = "SUCCESS" where transactiondId = ? and amount = ?', [individualTransaction, amount]);
+                        await db_connection.query('unlock tables');
+
+                        if(result.affectedRows == 0)
+                        {
+                            await db_connection.query('lock tables transactions write');
+                            const [result] = await db_connection.query('update transactions set transactionStatus = "MALPERROR" where transactiondId = ?', [individualTransaction]);
+                            await db_connection.query('unlock tables');
+                        }
+                        else{
+
+                        }
+                    }
+                    catch(err) {
+                        console.log(err);
+                        const now = new Date();
+                        now.setUTCHours(now.getUTCHours() + 5);
+                        now.setUTCMinutes(now.getUTCMinutes() + 30);
+                        const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                        fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                        fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                        res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                    }
+        
+                    finally {
+                        await db_connection.release()
+                    }
+                }
+                else{
 
                 }
 
