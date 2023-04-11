@@ -3299,3 +3299,54 @@ ReferenceError: jsonObj is not defined
 2023-04-11 10:14:41
 ReferenceError: x is not defined
 
+2023-04-11 16:06:32
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:08:02
+2023-04-11 16:09:32
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:11:30
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:12:12
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:12:36
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:13:55
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:14:42
+2023-04-11 16:16:41
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:18:16
+2023-04-11 16:19:18
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:19:24
+Error: Unknown column 'minCount' in 'field list'
+
+2023-04-11 16:19:49
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:19:54
+Error: Unknown column 'minCount' in 'field list'
+
+2023-04-11 16:21:20
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-11 16:28:59
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+Error: Column 'departmentAbbr' cannot be null
+
+2023-04-11 16:53:03

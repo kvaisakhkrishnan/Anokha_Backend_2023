@@ -360,7 +360,7 @@ const { param } = require('../routes/userApp');
             req.body.venue == undefined ||
             req.body.fees == undefined ||
             req.body.totalNumberOfSeats == undefined ||
-            req.body.departmentAbbr == undefined ||
+             
             req.body.refundable == undefined ||
             req.body.eventId == undefined ||
             validator.isEmpty(req.body.eventName) ||
@@ -368,14 +368,16 @@ const { param } = require('../routes/userApp');
         validator.isEmpty(req.body.eventDate) ||
         validator.isEmpty(req.body.eventTime) ||
         validator.isEmpty(req.body.venue) ||
-        validator.isEmpty(req.body.departmentAbbr) ||
+        
         req.body.groupOrIndividual == undefined ||
         req.body.maxCount == undefined ||
         req.body.minCount == undefined ||
-        req.body.userEmail == undefined ||
-        !validator.isEmail(req.body.userEmail)
+        req.body.userEmail == undefined 
         )
         {
+            console.log(req.body.userName);
+            console.log(req.body.userEmail);
+            
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
         else if((req.body.groupOrIndividual == 0 && (req.body.maxCount != 1 || req.body.maxCount != 1 ))|| req.body.minCount > req.body.maxCount)
@@ -386,7 +388,7 @@ const { param } = require('../routes/userApp');
             const db_connection = await db.promise().getConnection();
             try{
                 await db_connection.query('lock tables eventData write');
-                const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userEmail = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userEmail]);
+                const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userEmail = ?`,[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userEmail]);
                 await db_connection.query('unlock tables');
                 if(result.affectedRows == 0)
                 {
@@ -399,6 +401,7 @@ const { param } = require('../routes/userApp');
            
             catch(err)
             {
+                console.log(err);
                 const now = new Date();
                 now.setUTCHours(now.getUTCHours() + 5);
                 now.setUTCMinutes(now.getUTCMinutes() + 30);
