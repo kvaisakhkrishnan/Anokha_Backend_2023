@@ -55,6 +55,8 @@ router.post("/failure",userWebController.failureRedirect);
 
 router.post('/forgotPassword/verifyOtp', userWebController.verifyResetOtp);
 
+router.post('/forgotPassword/newPassword', userWebController.newPassword);
+
 module.exports = router;
 
 
