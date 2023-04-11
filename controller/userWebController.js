@@ -120,6 +120,7 @@ module.exports = {
             req.body.fullName == undefined ||
             req.body.password == undefined ||
             req.body.collegeId == undefined ||
+            req.body.phoneNumber == undefined ||
             !validator.isEmail(req.body.userEmail))
             
             {
@@ -179,7 +180,7 @@ module.exports = {
 
                         await db_connection.query("lock tables otp write");
                         await db_connection.query(`delete from OTP where userEmail = ?`,[req.body.userEmail]);
-                        await db_connection.query(`insert into OTP (userEmail, otp, fullName, password, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[req.body.userEmail,otpGenerated,req.body.fullName,req.body.password,currentStatus,0,isAmrita,req.body.collegeId,istTime,null,null]);
+                        await db_connection.query(`insert into OTP (userEmail, otp, fullName, password, phoneNumber, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[req.body.userEmail,otpGenerated,req.body.fullName,req.body.password,req.body.phoneNumber,currentStatus,0,isAmrita,req.body.collegeId,istTime,null,null]);
                         await db_connection.query("unlock tables");
                                
                         const token = await otpTokenGenerator({
@@ -501,6 +502,7 @@ module.exports = {
         if(req.body.fullName == undefined ||
             req.body.password == undefined ||
             req.body.userEmail == undefined ||
+            req.body.phoneNumber == undefined ||
             validator.isEmpty(req.body.fullName) ||
             validator.isEmpty(req.body.password) ||
             validator.isEmpty(req.body.userEmail) ||
@@ -511,12 +513,12 @@ module.exports = {
                 return;
             }
             else{
-                let sql_q = `Update userData SET fullName = ?,password = ? where userEmail = ?`
+                let sql_q = `Update userData SET fullName = ?,password = ?, phoneNumber = ? where userEmail = ?`
                 let db_connection = await db.promise().getConnection();
         try{
             
             await db_connection.query('lock tables userdata write');
-            const [results] = await db_connection.query(sql_q, [req.body.fullName,req.body.password,req.body.userEmail]); 
+            const [results] = await db_connection.query(sql_q, [req.body.fullName,req.body.password,req.body.phoneNumber,req.body.userEmail]); 
             await db_connection.query('unlock tables');
             if(results.affectedRows == 0)
             {

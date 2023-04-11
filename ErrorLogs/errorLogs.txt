@@ -3398,3 +3398,9 @@ Error: Cannot delete or update a parent row: a foreign key constraint fails (`an
 2023-04-11 21:33:51
 Error: Cannot delete or update a parent row: a foreign key constraint fails (`anokha`.`registeredevents`, CONSTRAINT `registeredevents_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `eventdata` (`eventId`))
 
+2023-04-12 01:45:17
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+Error: Table 'anokha_transactions.transactions' doesn't exist
+
+2023-04-12 01:45:58
