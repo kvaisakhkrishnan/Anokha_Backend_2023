@@ -786,7 +786,7 @@ module.exports = {
                         await db_connection.query("delete from ResetOtp where userEmail = ?", [req.body.userEmail]);
                         await db_connection.query("insert into ResetOtp (userEmail, otp) values(?, ?)", [req.body.userEmail,otpGenerated ]);
                         await db_connection.query("unlock tables");
-                        resetMailer(result[0].fullName, res.body.userEmail, otpGenerated);
+                        resetMailer(result[0].fullName, req.body.userEmail, otpGenerated);
                     }
                 }
                 catch(err)
