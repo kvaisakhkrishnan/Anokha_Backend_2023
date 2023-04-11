@@ -83,7 +83,7 @@ const PORT = 3000;
         }
         checkPaymentStatus();
       
-        setInterval(checkPaymentStatus, 90000); // 15 minutes trigger in main thread
+        setInterval(checkPaymentStatus, 900); // 15 minutes trigger in main thread
     }
 
     else{
