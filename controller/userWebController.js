@@ -234,7 +234,7 @@ module.exports = {
                 const db_connection = await db.promise().getConnection();
                 try{
                     await db_connection.query("lock tables userdata read");
-                    const [result] = await db_connection.query("select * from userdata where userEmail = ?", [res.body.userEmail]);
+                    const [result] = await db_connection.query("select * from userdata where userEmail = ?", [req.body.userEmail]);
                     await db_connection.query("unlock tables");
                     if(result.length == 0)
                     {
