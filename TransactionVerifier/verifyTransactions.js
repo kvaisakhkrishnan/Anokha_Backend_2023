@@ -96,9 +96,9 @@ const checkPaymentStatus = async () => {
 
 
                    
+                          
 
-
-                            if(output[0].productId[0]== "P")
+                            if(output[0].productId == "PASSPORT")
                             {
                                 const conn = await db.promise().getConnection();
                                 try{
