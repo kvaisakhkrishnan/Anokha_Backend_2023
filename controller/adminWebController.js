@@ -113,7 +113,6 @@ module.exports = {
             res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
         }
         else{
-            
             const db_connection = await db.promise().getConnection();
             try{
                 
@@ -127,6 +126,14 @@ module.exports = {
                 if(req.body.authorization_tier == "FACCOORD")
                 {
                     const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
+                    if(result.affectedRows == 1)
+                    {
+                        res.status(201).send({result : "Data Inserted Succesfully"});
+                    }
+                    else{
+                        res.status(404).send({"error" : "no data inserted"});
+                    }
+                
                 }
                 else if(req.body.authorization_tier == "DEPTHEAD" &&
                 req.body.corncUserEmail != undefined &&
@@ -134,8 +141,14 @@ module.exports = {
                 
                 
                 {
-                    const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
-
+                    [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
+                    if(result.affectedRows == 1)
+                    {
+                        res.status(201).send({result : "Data Inserted Succesfully"});
+                    }
+                    else{
+                        res.status(404).send({"error" : "no data inserted"});
+                    }
                 }
 
                 else if(req.body.corncUserEmail != undefined &&
@@ -143,8 +156,14 @@ module.exports = {
                         req.body.corncDepartmentAbbr != undefined
                         )
                 {
-                    const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.corncDepartmentAbbr]);
-
+                    [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.corncDepartmentAbbr]);
+                    if(result.affectedRows == 1)
+                    {
+                        res.status(201).send({result : "Data Inserted Succesfully"});
+                    }
+                    else{
+                        res.status(404).send({"error" : "no data inserted"});
+                    }
                 }
                
                 
@@ -153,7 +172,7 @@ module.exports = {
                 
                 await db_connection.query("unlock tables");
                 
-                res.status(201).send({result : "Data Inserted Succesfully"});
+               
             }
         
             catch(err)

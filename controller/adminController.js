@@ -11,72 +11,174 @@ const { param } = require('../routes/userApp');
 
 
 
-    createAdminAppUsers : [tokenValidator, async (req, res) => {
 
-         //USER tresspassing leds to ban.
-         if(req.body.authorization_tier == "USER")
+    createAdmin : [tokenValidator, async(req, res) => {
+        if(req.body.authorization_tier == "USER")
          {
             res.status(403).send({"error" : "You are blocked from further access"});
          }
-         else{
-        if(req.authorization_tier == "SUPER"){
+         else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
+
             if(req.body.userEmail == undefined ||
                 !validator.isEmail(req.body.userEmail) ||
                 req.body.name == undefined ||
                 req.body.phoneNumber == undefined ||
-                req.body.role == undefined ||
-                ((req.body.role == "DEPTHEAD" || req.body.role == "FACCOORD" || req.body.role == "STDCOORD") && req.body.departmentAbbr == undefined)
-                )
+                req.body.role == undefined)
                 {
-                    res.status(400).send({error : "Please Check Guys...."});
+                    res.status(400).send({error : "Error Creating admin. Not all data passed"});
                 }
                 else{
+                    const db_connection = await db.promise().getConnection();
+                    try{
+                    await db_connection.query("lock tables eventManager write");
                     const gn = rn.generator({
                         min: 100000,
                         max: 999999,
                         integer: true
                     });
+                    const now = new Date();
+                    now.setUTCHours(now.getUTCHours() + 5);
+                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                     
                     const userName = `${req.body.role}_${gn()}`;
                     const password = Math.random().toString(36).slice(2) + Math.random().toString(36).toUpperCase().slice(2);
-                    var department = "";
-                    if(req.body.departmentAbbr == undefined)
+                    if(req.body.role == "ADMIN")
                     {
-                        department = null;
+                        const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'ADMIN', null]);
+                        await db_connection.query("unlock tables");
+                        if(result.affectedRows == 0)
+                        {
+                            res.status(400).send({"error" : "data already exists"});
+                        }
+                        else{
+                            mailer(req.body.name, req.body.userEmail, userName, password);
+                            res.status(201).send({"message" : "done"});
+                        }
+                    }
+                    else if(req.body.role == "EWHEAD")
+                    {
+                        const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'EWHEAD', null]);
+                        await db_connection.query("unlock tables");
+                        if(result.affectedRows == 0)
+                        {
+                            res.status(400).send({"error" : "data already exists"});
+                        }
+                        else{
+                            mailer(req.body.name, req.body.userEmail, userName, password);
+                            res.status(201).send({"message" : "done"});
+                        }
+                    }
+                    else if(req.body.role == "DEPTHEAD")
+                    {
+                        if(req.body.departmentAbbr != undefined)
+                        {
+                            const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'DEPTHEAD', req.body.departmentAbbr]);
+                            await db_connection.query("unlock tables");
+                            if(result.affectedRows == 0)
+                        {
+                            res.status(400).send({"error" : "data already exists"});
+                        }
+                        else{
+                            mailer(req.body.name, req.body.userEmail, userName, password);
+                            res.status(201).send({"message" : "done"});
+                        }
+                        }
+                        else{
+                            
+                            res.status(400).send({error : "Error Creating admin. Not all data passed"});
+                        }
+                    }
+                    else if(req.body.role == "FACCOORD")
+                    {
+                        if(req.body.departmentAbbr != undefined)
+                        {
+                            const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'FACCOORD', req.body.departmentAbbr]);
+                            await db_connection.query("unlock tables");
+                            if(result.affectedRows == 0)
+                        {
+                            res.status(400).send({"error" : "data already exists"});
+                        }
+                        else{
+                            mailer(req.body.name, req.body.userEmail, userName, password);
+                            res.status(201).send({"message" : "done"});
+                        }
+                        }
+                        else{
+                            res.status(400).send({error : "Error Creating admin. Not all data passed"});
+                        }
+                    }
+                    else if(req.body.role == "STDCOORD")
+                    {
+                        if(req.body.departmentAbbr != undefined && req.body.facUserEmail != undefined && validator.isEmail(req.body.facUserEmail) && req.body.eventId != undefined)
+                        {
+                            const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'STDCOORD', req.body.departmentAbbr]);
+                            await db_connection.query("unlock tables");
+                            if(result.affectedRows == 1)
+                            {
+                                await db_connection.query("lock tables StudentCoordinator write");
+                                const [resut1] = db_connection.query("insert into StudentCoordinator (faculty, student, eventId) values (?,?,?)", [req.body.facUserEmail, req.body.userEmail, req.body.eventId]);
+                                await db_connection.query("unlock tables");
+                                if(result1.affectedRows == 1)
+                            {
+                                mailer(req.body.name, req.body.userEmail, userName, password);
+                                    res.status(201).send({"message" : "done"});
+                            
+                            }
+                            else{
+                                res.status(400).send({error : "Error Creating data"});
+                            }
+                            }
+                            else{
+                                res.status(400).send({error : "Error Creating data"});
+                            }
+                        }
+                        else{
+                            res.status(400).send({error : "Error Creating admin. Not all data passed"});
+                        }
+                    }
+                    else if(req.body.role == "SECURITY")
+                    {
+                        const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'SECURITY', null]);
+                        await db_connection.query("unlock tables");
+                        if(result.affectedRows == 0)
+                        {
+                            res.status(400).send({"error" : "data already exists"});
+                        }
+                        else{
+                            mailer(req.body.name, req.body.userEmail, userName, password);
+                            res.status(201).send({"message" : "done"});
+                        }
+
+
                     }
                     else{
-                        department = req.body.departmentAbbr;
-                    }
-                    const db_connection = await db.promise().getConnection();
-                    try{
-                        var date_time = new Date().toISOString().slice(0, 19).replace('T', ' ')
-                        await db_connection.query("lock tables EventManager write");
-                        const [result] = await db_connection.query(`insert into EventManager (userName,userEmail,name,password,timeStamp,phoneNumber,role) values (?,?,?,?,?,?,?)`, [userName, req.body.userEmail, req.body.name, password, date_time, req.body.phoneNumber, req.body.role]);
-                        await db_connection.query("unlock tables");
-                        mailer(req.body.name, req.body.userEmail, userName, password);
-                        res.status(201).send({"status" : "Done..."});
-                    }
-                    catch(err){
-                        const now = new Date();
-                        now.setUTCHours(now.getUTCHours() + 5);
-                        now.setUTCMinutes(now.getUTCMinutes() + 30);
-                        const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-                        fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-                        fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                        res.status(500).send({"Error" : err});
-                    }
-                    finally{
-                        await db_connection.release();
+                        res.status(404).send({"error" : "no such being taken for now. Contact DB admin if you want to add new role"})
                     }
                 }
-        }
-        else{
-            res.status(401).send({"error" : "You have no rights to be here!"})
-        }
-    }
+                catch(err)
+                {
+                   const now = new Date();
+                   now.setUTCHours(now.getUTCHours() + 5);
+                   now.setUTCMinutes(now.getUTCMinutes() + 30);
+                   const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                   fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+                   fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+                   res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+                }
+                finally{
+                   await db_connection.release();
+                }
+
+                }
+                
+
+         }
     }],
 
 
+
+    
 
 
 
@@ -291,7 +393,6 @@ const { param } = require('../routes/userApp');
             res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
         }
         else{
-            var result = [];
             const db_connection = await db.promise().getConnection();
             try{
                 
@@ -305,6 +406,14 @@ const { param } = require('../routes/userApp');
                 if(req.body.authorization_tier == "FACCOORD")
                 {
                     const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
+                    if(result.affectedRows == 1)
+                    {
+                        res.status(201).send({result : "Data Inserted Succesfully"});
+                    }
+                    else{
+                        res.status(404).send({"error" : "no data inserted"});
+                    }
+                
                 }
                 else if(req.body.authorization_tier == "DEPTHEAD" &&
                 req.body.corncUserEmail != undefined &&
@@ -313,7 +422,13 @@ const { param } = require('../routes/userApp');
                 
                 {
                     [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
-
+                    if(result.affectedRows == 1)
+                    {
+                        res.status(201).send({result : "Data Inserted Succesfully"});
+                    }
+                    else{
+                        res.status(404).send({"error" : "no data inserted"});
+                    }
                 }
 
                 else if(req.body.corncUserEmail != undefined &&
@@ -322,7 +437,13 @@ const { param } = require('../routes/userApp');
                         )
                 {
                     [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.corncDepartmentAbbr]);
-                    console.log(result);
+                    if(result.affectedRows == 1)
+                    {
+                        res.status(201).send({result : "Data Inserted Succesfully"});
+                    }
+                    else{
+                        res.status(404).send({"error" : "no data inserted"});
+                    }
                 }
                
                 
@@ -331,13 +452,7 @@ const { param } = require('../routes/userApp');
                 
                 await db_connection.query("unlock tables");
                 
-                if(result.affectedRows == 1)
-                {
-                    res.status(201).send({result : "Data Inserted Succesfully"});
-                }
-                else{
-                    res.status(404).send({"error" : "no data inserted"});
-                }
+               
             }
         
             catch(err)

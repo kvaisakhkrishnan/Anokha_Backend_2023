@@ -30,5 +30,7 @@ router.post('/getStats/totalFee',adminWebController.getTotalFee);
 //Stats for total regs
 router.post('/getStats/totalRegs',adminWebController.getTotalRegs);
 
+
+
 module.exports = router;
 

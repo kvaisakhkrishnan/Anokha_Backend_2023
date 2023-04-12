@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controller/adminController');
 
-//for super users
-router.post("/createAdminAppUsers", adminController.createAdminAppUsers)
+
 
 router.get("/getAdmin",adminController.getUserDetails);
 router.post("/getEventDetails", adminController.getEventDetails);
@@ -43,7 +42,10 @@ router.post('/event/delete', adminController.deleteEvent);
 router.post('/addStudentCoord', adminController.addStudentCoordinator);
 
 
+//for super users and admin
+router.post('/createAdmin', adminController.createAdmin);
 
+router.post('/createAdmin', adminController.createAdmin);
 
 
 module.exports = router;
