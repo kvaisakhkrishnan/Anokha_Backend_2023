@@ -456,35 +456,48 @@ module.exports = {
             res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
         }
         else{
-            var result;
             const db_connection = await db.promise().getConnection();
             try{
+                
                 await db_connection.query('lock tables eventData write');
 
                 if(req.body.authorization_tier == "FACCOORD")
                 {
                     const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userEmail = ?`,[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userEmail]);
-
+                    if(result.affectedRows == 0)
+                    {
+                        res.status(400).send({"error" : "Error in data"});
+                    }
+                    else{
+                    res.status(200).send({result : "Updated Succesfully"});
+                    }
                 }
                 else if(req.body.authorization_tier == "DEPTHEAD" && req.body.corncUserEmail != undefined && validator.isEmail(req.body.corncUserEmail))
                 {
                     const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ?, userEmail = ? where eventId = ? and departmentAbbr = ?`,[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.corncUserEmail,req.body.eventId,req.body.departmentAbbr]);
+                    if(result.affectedRows == 0)
+                    {
+                        res.status(400).send({"error" : "Error in data"});
+                    }
+                    else{
+                    res.status(200).send({result : "Updated Succesfully"});
+                    }
                 }
                 else if(req.body.corncUserEmail != undefined && validator.isEmail(req.body.corncUserEmail) && req.body.corncDepartmentAbbr != undefined)
                 {
                     const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ?, userEmail = ? where eventId = ?`,[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.corncDepartmentAbbr,req.body.corncUserEmail,req.body.eventId]);
-
+                    if(result.affectedRows == 0)
+                    {
+                        res.status(400).send({"error" : "Error in data"});
+                    }
+                    else{
+                    res.status(200).send({result : "Updated Succesfully"});
+                    }
                 }
 
 
                 await db_connection.query('unlock tables');
-                if(result.affectedRows == 0)
-                {
-                    res.status(400).send({"error" : "Error in data"});
-                }
-                else{
-                res.status(200).send({result : "Updated Succesfully"});
-                }}
+               }
 
            
             catch(err)
