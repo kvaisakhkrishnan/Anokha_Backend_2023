@@ -45,7 +45,7 @@ var mailOptions = {
   
     transporter.sendMail(mailOptions, function(error, info){});
 
-    res.send("Otp sent for verification")
+    res.send("Otp sent for verification \n OTP : " + otp);
     },
 
     startPayment : async (req,res) => {
@@ -62,7 +62,7 @@ axios.post("https://amritawallet.cb.amrita.edu/api/auth/login", {
 
 
 axios.post("https://amritawallet.cb.amrita.edu/api/v2/card/transfer",{
-    fromCardNo:"CB.EN.U4CSE20159",pin:"268",toCardNo:"AWESHOP0094",amount:"1.00",orderDetails:","
+    fromCardNo:req.body.userCardNo,pin:req.body.pin,toCardNo:config.toCardNo,amount:"500.00",orderDetails:","
     },
     {headers : {
         'authorization' : vendor_token
