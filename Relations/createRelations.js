@@ -20,7 +20,7 @@ const createTables = (db) => {
 
     
 
-    db.query("create table OTP (userEmail varchar(65) primary key, otp int unique not null, fullName VARCHAR(50) NOT NULL, password VARCHAR(25) NOT NULL, phoneNumber varchar(10) unique not null, currentStatus BOOLEAN NOT NULL, activePassport BOOLEAN NOT NULL, isAmritaCBE BOOLEAN NOT NULL, collegeId INT NOT NULL, accountTimeStamp timestamp NOT NULL, passportId VARCHAR(25) UNIQUE, passportTimeStamp timestamp);", (err, res) => {
+    db.query("create table OTP (userEmail varchar(65) primary key, otp int unique not null, fullName VARCHAR(50) NOT NULL, password VARCHAR(200) NOT NULL, phoneNumber varchar(10) unique not null, currentStatus BOOLEAN NOT NULL, activePassport BOOLEAN NOT NULL, isAmritaCBE BOOLEAN NOT NULL, collegeId INT NOT NULL, accountTimeStamp timestamp NOT NULL, passportId VARCHAR(25) UNIQUE, passportTimeStamp timestamp);", (err, res) => {
         if(err)
         {
             console.log("Failed to create OTP table")
@@ -58,7 +58,7 @@ const createTables = (db) => {
         }
     });
 
-    db.query("CREATE TABLE UserData (userEmail VARCHAR(65) PRIMARY KEY, fullName VARCHAR(50) NOT NULL, password VARCHAR(25) NOT NULL, phoneNumber varchar(10) not null unique, currentStatus BOOLEAN NOT NULL, activePassport BOOLEAN NOT NULL, isAmritaCBE BOOLEAN NOT NULL, collegeId INT NOT NULL, accountTimeStamp timestamp NOT NULL, passportId VARCHAR(25) UNIQUE, passportTimeStamp timestamp, FOREIGN KEY (collegeId) REFERENCES CollegeData (collegeId));", (err, result) => {
+    db.query("CREATE TABLE UserData (userEmail VARCHAR(65) PRIMARY KEY, fullName VARCHAR(50) NOT NULL, password VARCHAR(200) NOT NULL, phoneNumber varchar(10) not null unique, currentStatus BOOLEAN NOT NULL, activePassport BOOLEAN NOT NULL, isAmritaCBE BOOLEAN NOT NULL, collegeId INT NOT NULL, accountTimeStamp timestamp NOT NULL, passportId VARCHAR(25) UNIQUE, passportTimeStamp timestamp, FOREIGN KEY (collegeId) REFERENCES CollegeData (collegeId));", (err, result) => {
         if(err)
         {
             console.log("Failed to create UserData table");

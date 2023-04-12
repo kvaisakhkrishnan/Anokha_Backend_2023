@@ -100,13 +100,9 @@ const checkPaymentStatus = async () => {
                                     await conn.query('lock tables userData write');
                                     const [passport] = await conn.query('select * from userData where userEmail = ?', [output[0].userEmail]);
                                     var passportId = "";
-                                    if(passport[0].isAmritaCBE == 1)
-                                    {
-                                        passportId = "A23A" + CRC32.str([output[0].userEmail]);
-                                    }
-                                    else{
-                                        passportId = "A23E" + CRC32.str([output[0].userEmail]);
-                                    }
+                                   
+                                    passportId = "A23E" + CRC32.str([output[0].userEmail]);
+                                    
 
                                     const [fin] = await conn.query("update userData set passportId = ?, activePasspor = ? where userEmail = ?", [passportId, 1, [output[0].userEmail]]);
                                     await conn.query('unlock tables');

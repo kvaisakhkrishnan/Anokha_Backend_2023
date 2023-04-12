@@ -15,16 +15,16 @@ const finaldata = data.replace('%= name %', fullName).replace('%= otp %', otp);
 
   
 
-  
-  
-  var mailOptions = {
-      from: 'Anokha 2023',
-      to: userEmail,
-      subject: 'OTP Verification for Anokha 2023',
-      html: finaldata
-    }
-    
-  
+var mailOptions = {
+  from: {
+    name : "Anokha 2023",
+    address : 'anokha@cb.amrita.edu'
+  },
+  to: userEmail,
+  subject: 'OTP Verification for Anokha 2023',
+  html: finaldata
+}
+
     
     
     
