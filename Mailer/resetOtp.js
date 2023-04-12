@@ -15,10 +15,11 @@ const finaldata = data.replace('%= name %', fullName).replace('%= otp %', otp);
 
   
 
-  
-  
-  var mailOptions = {
-      from: 'Anokha 2023',
+    var mailOptions = {
+      from: {
+        name : "Anokha 2023",
+        address : 'anokha@cb.amrita.edu'
+      },
       to: userEmail,
       subject: 'Reset Password Verification',
       html: finaldata

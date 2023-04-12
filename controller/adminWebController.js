@@ -204,7 +204,7 @@ module.exports = {
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
         {
-           res.status(403).send({"error" : "You are blocked from further access"});
+           res.status(444).send({"error" : "You are blocked from further access"});
         }
         //SUPER Access
         //ADMIN Access
@@ -543,7 +543,7 @@ module.exports = {
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
         {
-           res.status(403).send({"error" : "You are blocked from further access"});
+           res.status(444).send({"error" : "You are blocked from further access"});
         }
         //SUPER Access
         //ADMIN Access
@@ -577,7 +577,7 @@ module.exports = {
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
         {
-           res.status(403).send({"error" : "You are blocked from further access"});
+           res.status(444).send({"error" : "You are blocked from further access"});
         }
         //SUPER Access
         //ADMIN Access
@@ -608,7 +608,7 @@ module.exports = {
             //USER tresspassing leds to ban.
          if(req.body.authorization_tier == "USER")
          {
-            res.status(403).send({"error" : "You are blocked from further access"});
+            res.status(444).send({"error" : "You are blocked from further access"});
          }
          //SUPER Access
         //ADMIN Access
@@ -644,7 +644,7 @@ module.exports = {
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
         {
-           res.status(403).send({"error" : "You are blocked from further access"});
+           res.status(444).send({"error" : "You are blocked from further access"});
         }
         //SUPER Access
         //ADMIN Access
@@ -696,7 +696,7 @@ module.exports = {
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
         {
-           res.status(403).send({"error" : "You are blocked from further access"});
+           res.status(444).send({"error" : "You are blocked from further access"});
         }
         //SUPER Access
         //ADMIN Access

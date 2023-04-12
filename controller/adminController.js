@@ -15,7 +15,7 @@ const { param } = require('../routes/userApp');
     createAdmin : [tokenValidator, async(req, res) => {
         if(req.body.authorization_tier == "USER")
          {
-            res.status(403).send({"error" : "You are blocked from further access"});
+            res.status(444).send({"error" : "You are blocked from further access"});
          }
          else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
 
@@ -188,7 +188,7 @@ const { param } = require('../routes/userApp');
         //Accessible to everyone except USER. USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
         {
-            res.status(403).send({"error" : "You are blocked from further access"});
+            res.status(444).send({"error" : "You are blocked from further access"});
         }
 
          //SUPER Access
