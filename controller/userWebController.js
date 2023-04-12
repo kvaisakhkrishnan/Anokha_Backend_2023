@@ -116,6 +116,7 @@ module.exports = {
 
     registerUser : async (req, res) =>{
        
+        console.log(req.body);
 
         if(req.body.userEmail == undefined ||
             req.body.fullName == undefined ||
