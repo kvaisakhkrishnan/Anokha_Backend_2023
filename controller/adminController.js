@@ -92,11 +92,10 @@ const { param } = require('../routes/userApp');
          //SUPER Access
          //ADMIN Access
          //EWHEAD Access
-         //REGHEAD Access
          //DEPTHEAD Access
          //STDCOORD Access
          //FACCOORD Access
-        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
 
 
         if(req.body.userName == undefined)
@@ -154,11 +153,10 @@ const { param } = require('../routes/userApp');
          //SUPER Access
          //ADMIN Access
          //EWHEAD Access
-         //REGHEAD Access
          //DEPTHEAD Access
          //STDCOORD Access
          //FACCOORD Access
-         else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
+         else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
        
         var sql_q = "";
         parameters = []
@@ -437,10 +435,9 @@ const { param } = require('../routes/userApp');
         //SUPER Access
         //ADMIN Access
         //EWHEAD Access
-        //REGHEAD Access
         //DEPTHEAD Access
         //FACCOORD Access
-        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"  || req.body.authorization_tier == "EWHEAD"  || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"  || req.body.authorization_tier == "EWHEAD"  || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
 
         if(req.params.eventId == undefined)
 
@@ -448,12 +445,29 @@ const { param } = require('../routes/userApp');
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
         else{
-        let sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId = ?);`
+        var sql = "";
+        var params = [];
+
+        if(req.body.authorization_tier == "FACCOORD")
+        {
+            sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId in (select eventId from eventData where userEmail = ?));`
+            params = [req.params.userEmail]
+        }
+
+        else if(req.body.authorization_tier == "DEPTHEAD")
+        {
+            sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId in (select eventId from eventData where departmentAbbr = ?));`
+            params = [req.params.departmentAbbr]
+        }
+        else{
+            sql = `select * from userData where userEmail in (select userEmail from registeredevents)`;
+            params = [];
+        }
 
         const db_connection = await db.promise().getConnection();
         try{
-            await db_connection.query("lock tables userData read, registeredevents read")
-            const [result] = await db_connection.query(sql, [req.params.eventId]);
+            await db_connection.query("lock tables userData read, registeredevents read, eventdata read")
+            const [result] = await db_connection.query(sql, params);
             await db_connection.query("unlock tables")
             res.status(200).send(result);
         }
