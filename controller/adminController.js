@@ -852,7 +852,7 @@ getAllEvents : [tokenValidator, async (req, res) => {
 
     let db_connection = await db.promise().getConnection();
     try{
-        await db_connection.query('lock tables eventdata');
+        await db_connection.query('lock tables eventdata read');
         const [result] = await db_connection.query(`select * from EventData`);
         await db_connection.query('unlock tables');
         res.status(200).send(result);
