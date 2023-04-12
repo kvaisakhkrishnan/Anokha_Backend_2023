@@ -342,7 +342,7 @@ module.exports = {
        
     }],
 
-    registeredUsers : [tokenValidator, async (req,res) => {
+    registeredUsers : [webtokenValidator, async (req,res) => {
 
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
