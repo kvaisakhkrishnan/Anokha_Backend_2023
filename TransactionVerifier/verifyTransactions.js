@@ -106,7 +106,7 @@ const checkPaymentStatus = async () => {
                                     const [passport] = await conn.query('select * from userData where userEmail = ?', [output[0].userEmail]);
                                     var passportId = "";
                                    
-                                    passportId = "A23E" + CRC32.str([output[0].userEmail]);
+                                    passportId = `A23E${CRC32.str([output[0].userEmail])}`;
                                     
 
                                     const [fin] = await conn.query("update userData set passportId = ?, activePasspor = ? where userEmail = ?", [passportId, 1, [output[0].userEmail]]);
