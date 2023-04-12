@@ -322,7 +322,7 @@ const { param } = require('../routes/userApp');
                         )
                 {
                     const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.corncDepartmentAbbr]);
-
+                    console.log(result);
                 }
                
                 
