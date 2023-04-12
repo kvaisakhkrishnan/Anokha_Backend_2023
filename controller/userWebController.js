@@ -176,6 +176,7 @@ module.exports = {
                             currentStatus = 1;
                             activePassport = 1;
                             passport = "A23A" + CRC32.str(req.body.userEmail);
+                           
                             const now = new Date();
                             now.setUTCHours(now.getUTCHours() + 5);
                             now.setUTCMinutes(now.getUTCMinutes() + 30);
@@ -183,6 +184,8 @@ module.exports = {
                             passportTimeStamp = istTime;
 
                         }
+
+                        console.log(passport);
 
                         const otpGenerated = randonNumberGenerator();
                         const now = new Date();
