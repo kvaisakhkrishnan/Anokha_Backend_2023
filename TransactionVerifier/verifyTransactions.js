@@ -110,7 +110,7 @@ const checkPaymentStatus = async () => {
                                     
                                     
 
-                                    const [fin] = await conn.query("update userData set passportId = ?, activePasspor = ? where userEmail = ?", [passportId, 1, [output[0].userEmail]]);
+                                    const [fin] = await conn.query("update userData set passportId = ?, activePassport = ? where userEmail = ?", [passportId, 1, [output[0].userEmail]]);
                                     await conn.query('unlock tables');
                                 }
                                 catch(err) {
