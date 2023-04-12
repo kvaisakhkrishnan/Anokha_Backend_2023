@@ -267,7 +267,7 @@ module.exports = {
            }
            else if(req.body.authorization_tier == "DEPTHEAD")
            {
-               sql_q = `select * from EventData where departmentAbbr = (select * from eventManager where userName = ?) and date = ?`;
+               sql_q = `select * from EventData where departmentAbbr = (select departmentAbbr  from eventManager where userName = ?) and date = ?`;
                parameters = [req.body.userName,req.body.eventDate]
            }
            else{
