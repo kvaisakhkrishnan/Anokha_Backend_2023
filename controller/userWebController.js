@@ -687,7 +687,7 @@ module.exports = {
                 }
                 else{
                         txid = "ANOKHA2023" + new Date().getTime();
-                        amount = 500;
+                        amount = 1;
                         const key = "ypfBaj";
                         const salt = "aG3tGzBZ";
                         productinfo = "PASSPORT";
