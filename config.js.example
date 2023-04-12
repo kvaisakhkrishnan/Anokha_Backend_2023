@@ -1,0 +1,4 @@
+module.exports = {
+    'ewallet_username' : 'eventide2023',
+    'password' : 'Eventide#123'
+};
