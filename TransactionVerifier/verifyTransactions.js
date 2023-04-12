@@ -95,10 +95,10 @@ const checkPaymentStatus = async () => {
                             await db_connection.query('unlock tables');
 
 
-                            console.log(output[0].productId);
+                   
 
 
-                            if(output[0].productId == "P")
+                            if(output[0].productId[0]== "P")
                             {
                                 const conn = await db.promise().getConnection();
                                 try{
