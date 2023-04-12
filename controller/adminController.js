@@ -163,7 +163,7 @@ const { param } = require('../routes/userApp');
         var sql_q = "";
         parameters = []
         
-        if(req.body.eventDate == undefined && req.body.userName != undefined && (req.body.authorization_tier == ""))
+        if(req.body.eventDate == undefined && req.body.userName != undefined)
         {
             
             if(req.body.authorization_tier == "FACCOORD")

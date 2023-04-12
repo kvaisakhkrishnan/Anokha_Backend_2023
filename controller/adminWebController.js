@@ -214,67 +214,105 @@ module.exports = {
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
         {
-           res.status(403).send({"error" : "You are blocked from further access"});
+           res.status(404).send({"error" : "no data found"});
         }
+
         //SUPER Access
         //ADMIN Access
-        //EWHEAD ACCESS
+        //EWHEAD Access
         //REGHEAD Access
         //DEPTHEAD Access
         //STDCOORD Access
         //FACCOORD Access
         else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
-        if(req.authorization_tier == "ADMIN"){
-        var sql_q = "";
-        parameters = []
-        if(req.body.eventDate == undefined && req.body.userName != undefined)
-        {
-            sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?)`;
-            parameters = [req.body.userName]
-        }
-        else if (req.body.userName != undefined){
-            sql_q = `select * from EventData where userName = (select userEmail from eventManager where userName = ?) and date = ?`;
-            parameters = [req.body.userName,req.body.eventDate]
-        }
-        else{
-            res.status(400).send({error : "We are one step ahead! Try harder!"});
-        }
+      
+       var sql_q = "";
+       parameters = []
        
-        const db_connection = await db.promise().getConnection();
-        try{
-            await db_connection.query('lock tables eventdata read, eventmanager read');
-            const [result] = await db_connection.query(sql_q, parameters);
-            await db_connection.query('unlock tables');
-            if(result.length == 0)
-            {
-                res.status(404).send({"error" : "no data found"});
-            }
-            else{
-                res.status(200).send(result);
-            }
-        }
-        catch(err)
-         {
-            console.log(err);
-            const now = new Date();
-            now.setUTCHours(now.getUTCHours() + 5);
-            now.setUTCMinutes(now.getUTCMinutes() + 30);
-            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
-            fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
-            fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-            res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
-         }
-         finally{
-            await db_connection.release();
-         }
-        }
-        else{
-            res.status(401).send({"error" : "You have no rights to be here!"})
-        }
-    }
+       if(req.body.eventDate == undefined && req.body.userName != undefined)
+       {
+           
+           if(req.body.authorization_tier == "FACCOORD")
+           {
+               sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?)`;
+               parameters = [req.body.userName]
+           }
+           else if(req.body.authorization_tier == "STDCOORD")
+           {
+               sql_q = `select * from EventData where eventId = (select eventId from StudentCoordinator left join eventManager on eventManager.student = StudentCoordinator.userEmail where userName = ?)`;
+               parameters = [req.body.userName]
+           }
+           else if(req.body.authorization_tier == "DEPTHEAD")
+           {
+               sql_q = `select * from EventData where departmentAbbr = (select * from eventManager where userName = ?)`;
+               parameters = [req.body.userName]
+           }
+           else{
+               sql_q = `select * from EventData`;
+               parameters = []
+           }
+           
+       }
+       else if (req.body.userName != undefined){
 
-        
-     }],
+           if(req.body.authorization_tier == "FACCOORD")
+           {
+               sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?) and date = ?`;
+               parameters = [req.body.userName,req.body.eventDate]
+           }
+           else if(req.body.authorization_tier == "STDCOORD")
+           {
+               sql_q = `select * from EventData where eventId = (select eventId from StudentCoordinator left join eventManager on eventManager.student = StudentCoordinator.userEmail where userName = ?) and date = ?`;
+               parameters = [req.body.userName,req.body.eventDate]
+           }
+           else if(req.body.authorization_tier == "DEPTHEAD")
+           {
+               sql_q = `select * from EventData where departmentAbbr = (select * from eventManager where userName = ?) and date = ?`;
+               parameters = [req.body.userName,req.body.eventDate]
+           }
+           else{
+               sql_q = `select * from EventData and date = ?`;
+               parameters = [req.body.eventDate]
+           }
+
+          
+       }
+       else{
+           res.status(400).send({error : "We are one step ahead! Try harder!"});
+       }
+      
+       const db_connection = await db.promise().getConnection();
+       try{
+           await db_connection.query("lock tables eventdata read, eventManager read, StudentCoordinator read");
+           const [result] = await db_connection.query(sql_q, parameters);
+           await db_connection.query("unlock tables");
+           if(result.length == 0)
+           {
+               res.status(404).send({"error" : "no data found"});
+           }
+           else{
+               res.status(200).send(result);
+           }
+       }
+       catch(err)
+        {
+           console.log(err);
+           const now = new Date();
+           now.setUTCHours(now.getUTCHours() + 5);
+           now.setUTCMinutes(now.getUTCMinutes() + 30);
+           const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+           fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
+           fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
+           res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
+        }
+        finally{
+           await db_connection.release();
+        }
+      
+       }
+       
+    }],
+
      registeredUsers : [webtokenValidator, async (req,res) => {
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
