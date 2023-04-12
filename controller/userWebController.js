@@ -175,7 +175,7 @@ module.exports = {
                             isAmrita = 1;
                             currentStatus = 1;
                             activePassport = 1;
-                            passport = "A23A" + CRC32.str([output[0].userEmail]);
+                            passport = "A23A" + CRC32.str(req.body.userEmail);
                             const now = new Date();
                             now.setUTCHours(now.getUTCHours() + 5);
                             now.setUTCMinutes(now.getUTCMinutes() + 30);
@@ -221,7 +221,7 @@ module.exports = {
                          const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                         fs.appendFile('ErrorLogs/errorLogs.txt', istTime+"\n", (err)=>{});
                         fs.appendFile('ErrorLogs/errorLogs.txt', err.toString()+"\n\n", (err)=>{});
-                        res.status(500).send({"Error" : err});
+                        res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
                 }
                 finally{
                     await db_connection.release();
