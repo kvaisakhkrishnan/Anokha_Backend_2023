@@ -303,8 +303,35 @@ const { param } = require('../routes/userApp');
                 const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                 await db_connection.query("lock tables eventData write");
                 let sql_q = `insert into EventData (eventName, eventOrWorkshop,technical, groupOrIndividual, minCount, maxCount, description, url, userEmail, date, eventTime, venue, fees, totalNumberOfSeats, noOfRegistrations, timeStamp, refundable, departmentAbbr) values (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)`;
+                
+                if(req.body.authorization_tier == "FACCOORD")
+                {
+                    const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
+                }
+                else if(req.body.authorization_tier == "DEPTHEAD" &&
+                req.body.corncUserEmail != undefined &&
+                validator.isEmail(req.body.corncUserEmail))
+                
+                
+                {
+                    const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
+
+                }
+
+                else if(req.body.corncUserEmail != undefined &&
+                    validator.isEmail(req.body.corncUserEmail) &&
+                        req.body.corncDepartmentAbbr != undefined
+                        )
+                {
+                    const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.corncDepartmentAbbr]);
+
+                }
+               
+                
+                
+                
+                
                 await db_connection.query("unlock tables");
-                const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
                 
                 res.status(201).send({result : "Data Inserted Succesfully"});
             }

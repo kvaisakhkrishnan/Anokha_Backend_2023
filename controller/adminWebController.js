@@ -70,19 +70,21 @@ module.exports = {
 
     },
 
-    createEvent : [webtokenGenerator, async  (req, res) => {
+    createEvent : [tokenValidator, async  (req, res) => {
 
         //USER tresspassing leds to ban.
-         if(req.body.authorization_tier == "USER")
-         {
-            res.status(403).send({"error" : "You are blocked from further access"});
-         }
-         //SUPER Access
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+
+        //SUPER Access
         //ADMIN Access
         //EWHEAD Access
         //DEPTHEAD Access
         //FACCOORD Access
         else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
+            
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
             req.body.description == undefined ||
@@ -101,7 +103,8 @@ module.exports = {
             req.body.url == undefined
         )
         {
-            console.log(req.body.userEmail);
+            console.log(req.body);
+
            
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
@@ -120,8 +123,35 @@ module.exports = {
                 const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                 await db_connection.query("lock tables eventData write");
                 let sql_q = `insert into EventData (eventName, eventOrWorkshop,technical, groupOrIndividual, minCount, maxCount, description, url, userEmail, date, eventTime, venue, fees, totalNumberOfSeats, noOfRegistrations, timeStamp, refundable, departmentAbbr) values (?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)`;
+                
+                if(req.body.authorization_tier == "FACCOORD")
+                {
+                    const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
+                }
+                else if(req.body.authorization_tier == "DEPTHEAD" &&
+                req.body.corncUserEmail != undefined &&
+                validator.isEmail(req.body.corncUserEmail))
+                
+                
+                {
+                    const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
+
+                }
+
+                else if(req.body.corncUserEmail != undefined &&
+                    validator.isEmail(req.body.corncUserEmail) &&
+                        req.body.corncDepartmentAbbr != undefined
+                        )
+                {
+                    const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.corncUserEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.corncDepartmentAbbr]);
+
+                }
+               
+                
+                
+                
+                
                 await db_connection.query("unlock tables");
-                const [result] = await db_connection.query(sql_q, [req.body.eventName,req.body.eventOrWorkshop,req.body.technical,req.body.groupOrIndividual,req.body.minCount, req.body.maxCount, req.body.description, req.body.url, req.body.userEmail,req.body.date,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,0,istTime,req.body.refundable,req.body.departmentAbbr]);
                 
                 res.status(201).send({result : "Data Inserted Succesfully"});
             }
