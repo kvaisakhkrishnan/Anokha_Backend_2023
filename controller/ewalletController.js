@@ -62,7 +62,7 @@ axios.post("https://amritawallet.cb.amrita.edu/api/auth/login", {
 
 
 axios.post("https://amritawallet.cb.amrita.edu/api/v2/card/transfer",{
-    fromCardNo:"CB.EN.U4CSE20159",pin:"2682",toCardNo:"AWESHOP0094",amount:"1.00",orderDetails:","
+    fromCardNo:"CB.EN.U4CSE20159",pin:"268",toCardNo:"AWESHOP0094",amount:"1.00",orderDetails:","
     },
     {headers : {
         'authorization' : vendor_token
@@ -71,7 +71,8 @@ axios.post("https://amritawallet.cb.amrita.edu/api/v2/card/transfer",{
         res.send(response.data);
         //console.log(response.data);
     },(err) => {
-        res.send("Insufficient balance - Recharge your e-wallet");
+        res.send(err.response.data.message);
+        
         
     })
 
