@@ -998,7 +998,7 @@ deleteEvent : [tokenValidator, async(req, res) => {
     //EWHEAD Access
     //DEPTHEAD Access
     //FACCOORD Access
-    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" ){
+    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.bosy.authorization_tier == "FACCOORD"){
     if(req.body.eventId == undefined ||
         req.body.userEmail == undefined ||
         !validator.isEmail(req.body.userEmail))
@@ -1009,15 +1009,43 @@ deleteEvent : [tokenValidator, async(req, res) => {
     const db_connection = await db.promise().getConnection();
     try{
         await db_connection.query("lock tables eventData write");
-        const [result] = await db_connection.query('delete from eventData where eventId = ? and userEmail = ?', [req.body.eventId, req.body.userEmail]);
-        await db_connection.query("unlock tables");
-        if(result.affectedRows == 0)
+        if(req.body.authorization_tier == "FACCOORD")
+        {
+            const [result] = await db_connection.query('delete from eventData where eventId = ? and userEmail = ?', [req.body.eventId, req.body.userEmail]);
+            if(result.affectedRows == 0)
+        {
+            res.status(404).send({"error" : "no data found"});
+        }
+        else{
+            res.status(200).send({"message" : "deleted succesfully"});
+        
+        }
+        }
+        else if(req.body.authorization_tier == "DEPTHEAD")
+        {
+            const [result] = await db_connection.query('delete from eventData where eventId = ? and departmentAbbr = ?', [req.body.eventId, req.body.departmentAbbr]);
+            if(result.affectedRows == 0)
+            {
+                res.status(404).send({"error" : "no data found"});
+            }
+            else{
+                res.status(200).send({"message" : "deleted succesfully"});
+            }
+        }
+        else
+        {
+            const [result] = await db_connection.query('delete from eventData where eventId = ?', [req.body.eventId]);
+            if(result.affectedRows == 0)
         {
             res.status(404).send({"error" : "no data found"});
         }
         else{
             res.status(200).send({"message" : "deleted succesfully"});
         }
+
+        }
+        await db_connection.query("unlock tables");
+        
     }
     catch(err)
     {
