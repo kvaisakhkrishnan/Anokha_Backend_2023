@@ -148,6 +148,17 @@ const createTables = (db) => {
         else{
             console.log("ResetOtp table created succesfully");  
         }
+    });
+
+    db.query("create table attendance (eventId int, userEmail varchar(65), primary key(eventId, userEmail), foreign key(eventId) references eventData(eventId), foreign key(userEmail) references userData(userEmail))", (err, result) => {
+        if(err)
+        {
+            console.log("Failed to create attendance table");
+
+        }
+        else{
+            console.log("attendance table created succesfully");  
+        }
     })
 
     

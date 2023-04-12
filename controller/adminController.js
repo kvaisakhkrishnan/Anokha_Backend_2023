@@ -12,6 +12,13 @@ const { param } = require('../routes/userApp');
 
 
     createAdminAppUsers : [tokenValidator, async (req, res) => {
+
+         //USER tresspassing leds to ban.
+         if(req.body.authorization_tier == "USER")
+         {
+            res.status(403).send({"error" : "You are blocked from further access"});
+         }
+         else{
         if(req.authorization_tier == "SUPER"){
             if(req.body.userEmail == undefined ||
                 !validator.isEmail(req.body.userEmail) ||
@@ -66,6 +73,7 @@ const { param } = require('../routes/userApp');
         else{
             res.status(401).send({"error" : "You have no rights to be here!"})
         }
+    }
     }],
 
 
@@ -74,7 +82,16 @@ const { param } = require('../routes/userApp');
 
 
     getUserDetails : [tokenValidator, async (req,res) => {
-        if(req.authorization_tier == "ADMIN"){
+       
+        //Accessible to everyone except USER. USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+            res.status(403).send({"error" : "You are blocked from further access"});
+        }
+
+        //SUPER Access
+        //ADMIN Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER"){
 
         if(req.body.userName == undefined)
         {
@@ -115,15 +132,27 @@ const { param } = require('../routes/userApp');
             await db_connection.release();
          }
         }
-    }else{
-        res.status(401).send({"error" : "You have no rights to be here!"})
     }
-     }],
+    }
+    ],
 
 
 
      getEventDetails : [tokenValidator, async(req, res) => {
-        if(req.authorization_tier == "ADMIN"){
+         //USER tresspassing leds to ban.
+         if(req.body.authorization_tier == "USER")
+         {
+            res.status(404).send({"error" : "no data found"});
+         }
+
+         //SUPER Access
+         //ADMIN Access
+         //EWHEAD Access
+         //REGHEAD Access
+         //DEPTHEAD Access
+         //STDCOORD Access
+         else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD"){
+       
         var sql_q = "";
         parameters = []
         
@@ -167,11 +196,8 @@ const { param } = require('../routes/userApp');
          finally{
             await db_connection.release();
          }
+       
         }
-        else{
-            res.status(401).send({"error" : "You have no rights to be here!"})
-        }
-
         
      }],
 
@@ -179,6 +205,18 @@ const { param } = require('../routes/userApp');
 
 
      createEvent : [tokenValidator, async  (req, res) => {
+
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+
+        //SUPER Access
+        //ADMIN Access
+        //EWHEAD Access
+        //DEPTHEAD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD"){
             
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
@@ -246,6 +284,7 @@ const { param } = require('../routes/userApp');
             await db_connection.release();
            }
         }
+    }
      }],
 
 
@@ -315,6 +354,19 @@ const { param } = require('../routes/userApp');
 
     registeredUsers : [tokenValidator, async (req,res) => {
 
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+
+        //SUPER Access
+        //ADMIN Access
+        //EWHEAD Access
+        //REGHEAD Access
+        //DEPTHEAD Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"  || req.body.authorization_tier == "EWHEAD"  || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD"){
+
         if(req.params.eventId == undefined)
 
         {
@@ -344,7 +396,7 @@ const { param } = require('../routes/userApp');
             await db_connection.release();
         }
         
-           
+    }
     
     }
     }],
@@ -352,6 +404,19 @@ const { param } = require('../routes/userApp');
 
 
     updateEventData : [tokenValidator,  async (req, res) => {
+
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+
+        //SUPER Access
+        //ADMIN Access
+        //EWHEAD Access
+        //DEPTHEAD Access
+        //STDCOORD Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD"){
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
             req.body.description == undefined ||
@@ -414,6 +479,7 @@ const { param } = require('../routes/userApp');
             finally{
                 await db_connection.release();
             }
+        }
         
     }
     }],
@@ -422,6 +488,12 @@ const { param } = require('../routes/userApp');
 
 
     verifyUser : [tokenValidator,async (req,res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+        else{
 
         if(req.authorization_tier == "SECURITY")
         {
@@ -517,7 +589,8 @@ const { param } = require('../routes/userApp');
         }
         else{
             res.status(401).send({"error" : "You have no rights to be here!"})
-        }   
+        } 
+    }  
         
     }],
 
@@ -526,6 +599,17 @@ const { param } = require('../routes/userApp');
 
 
 getAllEvents : [tokenValidator, async (req, res) => {
+
+    //USER tresspassing leds to ban.
+    if(req.body.authorization_tier == "USER")
+    {
+       res.status(404).send({"error" : "no data found"});
+    }
+
+    //SUPER Access
+    //ADMIN Access
+    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
+
     let db_connection = await db.promise().getConnection();
     try{
         await db_connection.query('lock tables eventdata');
@@ -548,11 +632,21 @@ getAllEvents : [tokenValidator, async (req, res) => {
     finally{
         await db_connection.release();
     }
+    }
 }],
 
-getEventsByDept : [
-    tokenValidator,
-    async (req,res) => {
+getEventsByDept : [tokenValidator, async (req,res) => {
+
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+
+        //SUPER Access
+        //ADMIN Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
+
         let db_connection = await db.promise().getConnection();
         try{
             await db_connection.query('lock tables eventdata read');
@@ -576,11 +670,19 @@ getEventsByDept : [
             await db_connection.release()
         }
     }
+    }
 ],
 
-getEventsByDate : [
-    tokenValidator,
-    async (req,res) => {
+getEventsByDate : [tokenValidator,async (req,res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+
+        //ADMIN Access
+        //SUPER Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
         
         let db_connection = await db.promise().getConnection();
         try{
@@ -605,13 +707,21 @@ getEventsByDate : [
             await db_connection.release()
         }
 
-
+    }
     }
 ],
 
-getTotalFee : [
-    tokenValidator,
-    async (req,res) => {
+getTotalFee : [tokenValidator,async (req,res) => {
+
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+        //ADMIN Access
+        //SUPER Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
+
         if(req.body.eventName == undefined && req.body.dept == undefined) {
             res.send("No data passed in body to post")
         }
@@ -650,11 +760,18 @@ getTotalFee : [
         }
     }
     }
+    }
 ],
 
-getTotalRegs : [
-    tokenValidator,
-    async (req,res) => {
+getTotalRegs : [tokenValidator,async (req,res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(404).send({"error" : "no data found"});
+        }
+        //ADMIN Access
+        //SUPER Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
 
         if(req.body.eventName == undefined && req.body.dept == undefined) {
             res.send("No data sent in post")
@@ -696,10 +813,19 @@ getTotalRegs : [
         }
         }
     }
+    }
 ],
 
 
 getTotalRevenue : [tokenValidator, async (req, res) => {
+    //USER tresspassing leds to ban.
+    if(req.body.authorization_tier == "USER")
+    {
+       res.status(404).send({"error" : "no data found"});
+    }
+    //ADMIN Access
+    //SUPER Access
+    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
     var searchString = "";
    if(req.body.authorization_tier == "ADMIN"){
     searchString = "select eventData.eventId, eventData.eventName, noOfRegistrations, departmentName, sum(fees) as revenue from registeredEvents left join eventData on eventData.eventId = registeredEvents.eventId  left join departmentData on eventData.departmentAbbr = departmentData.departmentAbbr group by eventData.eventId"
@@ -731,11 +857,22 @@ getTotalRevenue : [tokenValidator, async (req, res) => {
     finally{
         await db_connection.release();
     }
+}
 
 }],
 
 
 deleteEvent : [tokenValidator, async(req, res) => {
+    //USER tresspassing leds to ban.
+    if(req.body.authorization_tier == "USER")
+    {
+       res.status(404).send({"error" : "no data found"});
+    }
+    //ADMIN Access
+    //SUPER Access
+    //EWHEAD Access
+    //DEPTHEAD Access
+    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD"){
     if(req.body.eventId == undefined ||
         req.body.userEmail == undefined ||
         !validator.isEmail(req.body.userEmail))
@@ -771,10 +908,19 @@ deleteEvent : [tokenValidator, async(req, res) => {
         await db_connection.release();
     }
     }
+}
 }],
 
  
 addStudentCoordinator : [tokenValidator, async(req, res) => {
+    //USER tresspassing leds to ban.
+    if(req.body.authorization_tier == "USER")
+    {
+       res.status(404).send({"error" : "no data found"});
+    }
+    //ADMIN Access
+    //SUPER Access
+    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"){
     if(req.body.userEmail == undefined ||
         !validator.isEmail(req.body.userEmail) ||
         req.body.studentCoordinatorEmail == undefined ||
@@ -837,6 +983,7 @@ addStudentCoordinator : [tokenValidator, async(req, res) => {
         await db_connection.release();
     }
         }
+    }
         
 }]
 

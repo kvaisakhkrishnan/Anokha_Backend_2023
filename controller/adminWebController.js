@@ -71,7 +71,17 @@ module.exports = {
     },
 
     createEvent : [webtokenGenerator, async  (req, res) => {
-            
+
+        //USER tresspassing leds to ban.
+         if(req.body.authorization_tier == "USER")
+         {
+            res.status(403).send({"error" : "You are blocked from further access"});
+         }
+         //SUPER Access
+        //ADMIN Access
+        //EWHEAD Access
+        //DEPTHEAD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD"){
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
             req.body.description == undefined ||
@@ -137,9 +147,18 @@ module.exports = {
             await db_connection.release();
            }
         }
+    }
      }],
 
      getUserDetails : [webtokenValidator, async (req,res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(403).send({"error" : "You are blocked from further access"});
+        }
+        //SUPER Access
+        //ADMIN Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" ){
         if(req.authorization_tier == "ADMIN"){
 
         if(req.body.userName == undefined)
@@ -186,10 +205,23 @@ module.exports = {
     }else{
         res.status(401).send({"error" : "You have no rights to be here!"})
     }
+    }
      }],
 
      
      getEventDetails : [webtokenValidator, async(req, res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(403).send({"error" : "You are blocked from further access"});
+        }
+        //SUPER Access
+        //ADMIN Access
+        //EWHEAD ACCESS
+        //REGHEAD Access
+        //DEPTHEAD Access
+        //STDCOORD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD"){
         if(req.authorization_tier == "ADMIN"){
         var sql_q = "";
         parameters = []
@@ -237,10 +269,22 @@ module.exports = {
         else{
             res.status(401).send({"error" : "You have no rights to be here!"})
         }
+    }
 
         
      }],
      registeredUsers : [webtokenValidator, async (req,res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(403).send({"error" : "You are blocked from further access"});
+        }
+        //SUPER Access
+        //ADMIN Access
+        //EWHEAD Access
+        //REGHEAD Access
+        //DEPTHEAD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD"){
 
         if(req.params.eventId == undefined)
 
@@ -271,12 +315,23 @@ module.exports = {
             await db_connection.release();
         }
         
-           
+    }
     
     }
     }],
 
     updateEventData : [webtokenValidator,  async (req, res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(403).send({"error" : "You are blocked from further access"});
+        }
+        //SUPER Access
+        //ADMIN Access
+        //EWHEAD Access
+        //DEPTHEAD Access
+        //STDCOORD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD"){
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
             req.body.description == undefined ||
@@ -336,11 +391,19 @@ module.exports = {
             finally{
                 await db_connection.release();
             }
-        
+        }
     }
     }],
 
     getAllEvents : [webtokenValidator, async (req, res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(403).send({"error" : "You are blocked from further access"});
+        }
+        //SUPER Access
+        //ADMIN Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER"){
         let db_connection = await db.promise().getConnection();
         try{
             await db_connection.query('lock tables eventdata read');
@@ -363,11 +426,18 @@ module.exports = {
         finally{
             await db_connection.release();
         }
+    }
     }],
 
-    getEventsByDept : [
-        webtokenValidator,
-        async (req,res) => {
+    getEventsByDept : [webtokenValidator,async (req,res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(403).send({"error" : "You are blocked from further access"});
+        }
+        //SUPER Access
+        //ADMIN Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER"){
             let db_connection = await db.promise().getConnection();
             try{
                 await db_connection.query('lock tables eventdata');
@@ -387,12 +457,18 @@ module.exports = {
                 res.status(500).send({"Error" : "Contact DB Admin if you see this message"});
             }
         }
+    }
     ],
 
-    getEventsByDate : [
-        webtokenValidator,
-        async (req,res) => {
-            
+    getEventsByDate : [webtokenValidator,async (req,res) => {
+            //USER tresspassing leds to ban.
+         if(req.body.authorization_tier == "USER")
+         {
+            res.status(403).send({"error" : "You are blocked from further access"});
+         }
+         //SUPER Access
+        //ADMIN Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER"){
             let db_connection = await db.promise().getConnection();
             try{
                 await db_connection.query('lock tables eventdata read');
@@ -417,11 +493,18 @@ module.exports = {
             }
     
         }
+    }
     ],
 
-    getTotalFee : [
-        webtokenValidator,
-        async (req,res) => {
+    getTotalFee : [webtokenValidator,async (req,res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(403).send({"error" : "You are blocked from further access"});
+        }
+        //SUPER Access
+        //ADMIN Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER"){
             if(req.body.eventName == undefined && req.body.dept == undefined) {
                 res.send("No data passed in body to post")
             }
@@ -462,11 +545,18 @@ module.exports = {
             }
         }
         }
+    }
     ],
 
-    getTotalRegs : [
-        webtokenValidator,
-        async (req,res) => {
+    getTotalRegs : [webtokenValidator,async (req,res) => {
+        //USER tresspassing leds to ban.
+        if(req.body.authorization_tier == "USER")
+        {
+           res.status(403).send({"error" : "You are blocked from further access"});
+        }
+        //SUPER Access
+        //ADMIN Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER"){
     
             if(req.body.eventName == undefined && req.body.dept == undefined) {
                 res.send("No data sent in post")
@@ -508,6 +598,8 @@ module.exports = {
             }
             }
         }
+    }
     ]
+    
 
 }

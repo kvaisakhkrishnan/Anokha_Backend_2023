@@ -11,6 +11,7 @@ const insertDummyData = (db, transactions_db) => {
     db.query(`insert into Roles (role) values ("STDCOORD")`);
     db.query(`insert into Roles (role) values ("EVNTDREG")`);
     db.query(`insert into Roles (role) values ("SECURITY")`);
+    db.query(`insert into Roles (role) values ("REGHEAD")`);
     var date_time = new Date().toISOString().slice(0, 19).replace('T', ' ')
     db.query(`insert into EventManager (userName,userEmail,name,password,timeStamp,phoneNumber,role) values ('SUPER_VAI_2023','cb.en.u4cse20069@cb.students.amrita.edu','Vaisakhkrishnan K','hd8t3edbiug39eutougdhe','${date_time}','8129348583','SUPER')`); 
     db.query(`insert into EventManager (userName,userEmail,name,password,timeStamp,phoneNumber,role) values ('SUPER_SHR_2023','cb.en.u4cse20159@cb.students.amrita.edu','Sharath S R','iuge62g3d8b82yfdio3eoi','${date_time}','9597197934','SUPER')`); 
