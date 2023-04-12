@@ -461,7 +461,7 @@ const { param } = require('../routes/userApp');
         }
         else{
             sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId = ?)`;
-            params = [req.param.eventId];
+            params = [req.params.eventId];
         }
 
         const db_connection = await db.promise().getConnection();
