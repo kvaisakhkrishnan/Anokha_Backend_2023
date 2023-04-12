@@ -1113,7 +1113,7 @@ deleteEvent : [tokenValidator, async(req, res) => {
     //EWHEAD Access
     //DEPTHEAD Access
     //FACCOORD Access
-    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.bosy.authorization_tier == "FACCOORD"){
+    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
     if(req.body.eventId == undefined ||
         req.body.userEmail == undefined ||
         !validator.isEmail(req.body.userEmail))
