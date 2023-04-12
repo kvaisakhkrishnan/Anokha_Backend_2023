@@ -342,7 +342,7 @@ module.exports = {
        
     }],
 
-    registeredUsers : [webtokenValidator, async (req,res) => {
+    registeredUsers : [tokenValidator, async (req,res) => {
 
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
@@ -368,18 +368,18 @@ module.exports = {
 
         if(req.body.authorization_tier == "FACCOORD")
         {
-            sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId in (select eventId from eventData where userEmail = ?));`
-            params = [req.params.userEmail]
+            sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId in (select eventId from eventData where userEmail = ? and eventId = ?));`
+            params = [req.body.userEmail, req.params.eventId]
         }
 
         else if(req.body.authorization_tier == "DEPTHEAD")
         {
-            sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId in (select eventId from eventData where departmentAbbr = ?));`
-            params = [req.params.departmentAbbr]
+            sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId in (select eventId from eventData where departmentAbbr = ? and eventId = ?));`
+            params = [req.body.departmentAbbr, req.param.eventId]
         }
         else{
-            sql = `select * from userData where userEmail in (select userEmail from registeredevents)`;
-            params = [];
+            sql = `select * from userData where userEmail in (select userEmail from registeredevents where eventId = ?)`;
+            params = [req.param.eventId];
         }
 
         const db_connection = await db.promise().getConnection();

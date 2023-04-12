@@ -15,6 +15,7 @@ const crypto = require('crypto');
 const resetMailer = require('../Mailer/resetOtp');
 const resetPasswordGenerator = require('../middleware/otpResetGenerator');
 const resetPasswordValidator = require('../middleware/otpResetValidator');
+var CRC32 = require("crc-32");
 
 module.exports = {
     getAllEvents :  async (req, res) => {
@@ -114,7 +115,7 @@ module.exports = {
     },
 
     registerUser : async (req, res) =>{
-
+       
 
         if(req.body.userEmail == undefined ||
             req.body.fullName == undefined ||
@@ -166,10 +167,21 @@ module.exports = {
                         }
                         var currentStatus = 0;
                         var isAmrita = 0;
+                        var activePassport = 0;
+                        var passport = null;
+                        var passportTimeStamp = null;
                         if(req.body.collegeId == 633 || req.body.collegeId == 638 || req.body.collegeId == 645)
                         {
                             isAmrita = 1;
                             currentStatus = 1;
+                            activePassport = 1;
+                            passport = "A23A" + CRC32.str([output[0].userEmail]);
+                            const now = new Date();
+                            now.setUTCHours(now.getUTCHours() + 5);
+                            now.setUTCMinutes(now.getUTCMinutes() + 30);
+                            const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
+                            passportTimeStamp = istTime;
+
                         }
 
                         const otpGenerated = randonNumberGenerator();
@@ -180,7 +192,7 @@ module.exports = {
 
                         await db_connection.query("lock tables otp write");
                         await db_connection.query(`delete from OTP where userEmail = ?`,[req.body.userEmail]);
-                        await db_connection.query(`insert into OTP (userEmail, otp, fullName, password, phoneNumber, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[req.body.userEmail,otpGenerated,req.body.fullName,req.body.password,req.body.phoneNumber,currentStatus,0,isAmrita,req.body.collegeId,istTime,null,null]);
+                        await db_connection.query(`insert into OTP (userEmail, otp, fullName, password, phoneNumber, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[req.body.userEmail,otpGenerated,req.body.fullName,req.body.password,req.body.phoneNumber,currentStatus,activePassport,isAmrita,req.body.collegeId,istTime,passport,passportTimeStamp]);
                         await db_connection.query("unlock tables");
                                
                         const token = await otpTokenGenerator({
@@ -223,6 +235,7 @@ module.exports = {
 
         
     },
+
 
     forgotPassword : async (req, res) => {
 
