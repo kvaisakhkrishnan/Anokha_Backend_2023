@@ -107,7 +107,7 @@ const checkPaymentStatus = async () => {
                                     var passportId = "";
                                    
                                     passportId = `A23E${CRC32.str([output[0].userEmail])}`;
-                                    
+                                    console.log(passportId);
 
                                     const [fin] = await conn.query("update userData set passportId = ?, activePasspor = ? where userEmail = ?", [passportId, 1, [output[0].userEmail]]);
                                     await conn.query('unlock tables');
