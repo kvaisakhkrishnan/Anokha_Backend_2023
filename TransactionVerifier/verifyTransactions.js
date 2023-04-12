@@ -107,10 +107,13 @@ const checkPaymentStatus = async () => {
                                     var passportId = "";
                                    
                                     passportId = "A23E" + CRC32.str(output[0].userEmail);
-                                    
+                                    const now = new Date();
+                                    now.setUTCHours(now.getUTCHours() + 5);
+                                    now.setUTCMinutes(now.getUTCMinutes() + 30);
+                                    const istTime = now.toISOString().slice(0, 19).replace('T', ' ');
                                     
 
-                                    const [fin] = await conn.query("update userData set passportId = ?, activePassport = ? where userEmail = ?", [passportId, 1, [output[0].userEmail]]);
+                                    const [fin] = await conn.query("update userData set passportId = ?, activePassport = ?,  passportTimeStamp = ? where userEmail = ?", [passportId, 1,istTime  ,[output[0].userEmail]]);
                                     await conn.query('unlock tables');
                                 }
                                 catch(err) {
