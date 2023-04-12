@@ -441,7 +441,7 @@ module.exports = {
                     now.setUTCMinutes(now.getUTCMinutes() + 30);
                     const istTime = now.toISOString().slice(0, 19).replace('T', ' ');   
                     await db_connection.query("lock tables UserData write, otp write");
-                    db_connection.query(`insert into UserData (userEmail, fullName, password, phoneNumber, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[result[0].userEmail,result[0].fullName,result[0].password,result[0].phoneNumber,result[0].currentStatus,0,result[0].isAmritaCBE,result[0].collegeId,istTime,result[0].passportId,result[0].passportTimeStamp]);
+                    db_connection.query(`insert into UserData (userEmail, fullName, password, phoneNumber, currentStatus, activePassport, isAmritaCBE, collegeId, accountTimeStamp, passportId, passportTimeStamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,[result[0].userEmail,result[0].fullName,result[0].password,result[0].phoneNumber,result[0].currentStatus,result[0].activePassport,result[0].isAmritaCBE,result[0].collegeId,istTime,result[0].passportId,result[0].passportTimeStamp]);
                     db_connection.query(`delete from OTP where userEmail = ?`,[userEmail]);
                     await db_connection.query("unlock tables");
                     welcomeMailer(result[0].fullName, userEmail);
