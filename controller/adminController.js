@@ -548,6 +548,7 @@ const { param } = require('../routes/userApp');
         else{
             const db_connection = await db.promise().getConnection();
             try{
+                var result;
                 await db_connection.query('lock tables eventData write');
 
                 if(req.body.authorization_tier == "FACCOORD")

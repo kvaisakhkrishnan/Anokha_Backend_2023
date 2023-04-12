@@ -456,6 +456,7 @@ module.exports = {
             res.status(400).send({"error" : "ANOKHAERRCODEUNDEFINEDPARAMETERS"});
         }
         else{
+            var result;
             const db_connection = await db.promise().getConnection();
             try{
                 await db_connection.query('lock tables eventData write');
