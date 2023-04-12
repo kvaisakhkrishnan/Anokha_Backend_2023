@@ -70,7 +70,7 @@ module.exports = {
 
     },
 
-    createEvent : [tokenValidator, async  (req, res) => {
+    createEvent : [webtokenValidator, async  (req, res) => {
 
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
