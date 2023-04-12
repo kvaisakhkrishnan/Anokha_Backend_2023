@@ -10,7 +10,7 @@ const config = require("../config.js.example");
 
 
 
-
+var otp;
 module.exports = {
 
 
@@ -23,7 +23,7 @@ module.exports = {
     }
 });
 
-var otp = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+ otp = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
 const data = fs.readFileSync('htmlDocuments/otpVerification.html').toString();
 const finaldata = data.replace('%= name %', "Student").replace('%= otp %', otp);
 
@@ -45,10 +45,16 @@ var mailOptions = {
   
     transporter.sendMail(mailOptions, function(error, info){});
 
-    res.send("Otp sent for verification \n OTP : " + otp);
+    res.send("Otp sent for verification");
     },
 
     startPayment : async (req,res) => {
+        
+        if(req.body.user_otp != otp) {
+            res.send("Error : Invalid OTP")
+        }
+
+        else {
         var vendor_token;
 axios.post("https://amritawallet.cb.amrita.edu/api/auth/login", {
     username: config.ewallet_username,
@@ -77,7 +83,7 @@ axios.post("https://amritawallet.cb.amrita.edu/api/v2/card/transfer",{
     })
 
 
-
+        }
     }
 }
 
