@@ -13,6 +13,8 @@ const userAppRouter = require('./routes/userApp');
 const adminAppRouter = require('./routes/adminApp');
 const userWebRouter = require('./routes/userWeb');
 const adminWebRouter = require('./routes/adminWeb');
+
+const ewalletController = require('./routes/ewallet');
 const {generateKey, generateTransactionKey} = require('./AssymetricKeyPair/key');
 const createViews = require('./ViewGenerator/views.js');
 const establishConnection = require('./initializeConnection.js');
@@ -35,7 +37,7 @@ const PORT = 3000;
     server.use('/adminApp', adminAppRouter);
     server.use('/userWeb',userWebRouter);
     server.use('/adminWeb',adminWebRouter);
-
+    server.use('/ewallet',ewalletController);
  
 
 
