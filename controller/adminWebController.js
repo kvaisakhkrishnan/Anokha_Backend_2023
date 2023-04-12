@@ -409,18 +409,19 @@ module.exports = {
     }],
 
     updateEventData : [webtokenValidator,  async (req, res) => {
+
         //USER tresspassing leds to ban.
         if(req.body.authorization_tier == "USER")
         {
-           res.status(403).send({"error" : "You are blocked from further access"});
+           res.status(404).send({"error" : "no data found"});
         }
+
         //SUPER Access
         //ADMIN Access
         //EWHEAD Access
         //DEPTHEAD Access
-        //STDCOORD Access
-        //FACCOORD Access
-        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
+        //FACCOOD Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
             req.body.description == undefined ||
@@ -430,7 +431,7 @@ module.exports = {
             req.body.venue == undefined ||
             req.body.fees == undefined ||
             req.body.totalNumberOfSeats == undefined ||
-            req.body.departmentAbbr == undefined ||
+             
             req.body.refundable == undefined ||
             req.body.eventId == undefined ||
             validator.isEmpty(req.body.eventName) ||
@@ -438,14 +439,16 @@ module.exports = {
         validator.isEmpty(req.body.eventDate) ||
         validator.isEmpty(req.body.eventTime) ||
         validator.isEmpty(req.body.venue) ||
-        validator.isEmpty(req.body.departmentAbbr) ||
+        
         req.body.groupOrIndividual == undefined ||
         req.body.maxCount == undefined ||
         req.body.minCount == undefined ||
-        req.body.userEmail == undefined ||
-        !validator.isEmail(req.body.userEmail)
+        req.body.userEmail == undefined 
         )
         {
+            console.log(req.body.userName);
+            console.log(req.body.userEmail);
+            
             res.status(400).send({error : "We are one step ahead! Try harder!"});
         }
         else if((req.body.groupOrIndividual == 0 && (req.body.maxCount != 1 || req.body.maxCount != 1 ))|| req.body.minCount > req.body.maxCount)
@@ -455,8 +458,24 @@ module.exports = {
         else{
             const db_connection = await db.promise().getConnection();
             try{
-                await db_connection.query('lock tables eventData');
-                const [result] = db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userEmail = ?`[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userEmail]);
+                await db_connection.query('lock tables eventData write');
+
+                if(req.body.authorization_tier == "FACCOORD")
+                {
+                    const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and userEmail = ?`,[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.userEmail]);
+
+                }
+                else if(req.body.authorization_tier == "DEPTHEAD")
+                {
+                    const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ? and departmentAbbr = ?`,[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId,req.body.departmentAbbr]);
+                }
+                else
+                {
+                    const [result] = await db_connection.query(`update EventData set eventName = ?, groupOrIndividual = ?,minCount = ?, maxCount = ?, description = ?, date = ?, eventTime = ?, venue = ?, fees = ?, totalNumberOfSeats = ?, refundable = ?, departmentAbbr = ? where eventId = ?`,[req.body.eventName,req.body.groupOrIndividual, req.body.minCount, req.body.maxCount, req.body.description,req.body.eventDate,req.body.eventTime,req.body.venue,req.body.fees,req.body.totalNumberOfSeats,req.body.refundable,req.body.departmentAbbr,req.body.eventId]);
+
+                }
+
+
                 await db_connection.query('unlock tables');
                 if(result.affectedRows == 0)
                 {
@@ -469,6 +488,7 @@ module.exports = {
            
             catch(err)
             {
+                console.log(err);
                 const now = new Date();
                 now.setUTCHours(now.getUTCHours() + 5);
                 now.setUTCMinutes(now.getUTCMinutes() + 30);
@@ -481,8 +501,10 @@ module.exports = {
                 await db_connection.release();
             }
         }
+        
     }
     }],
+
 
     getAllEvents : [webtokenValidator, async (req, res) => {
         //USER tresspassing leds to ban.

@@ -276,7 +276,7 @@ module.exports = {
                             isAmrita = 1;
                             currentStatus = 1;
                             activePassport = 1;
-                            passport = "A23A" + CRC32.str([output[0].userEmail]);
+                            passport = "A23A" + CRC32.str(req.body.userEmail);
                             const now = new Date();
                             now.setUTCHours(now.getUTCHours() + 5);
                             now.setUTCMinutes(now.getUTCMinutes() + 30);
