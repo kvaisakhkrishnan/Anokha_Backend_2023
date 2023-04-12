@@ -81,7 +81,8 @@ module.exports = {
         //ADMIN Access
         //EWHEAD Access
         //DEPTHEAD Access
-        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD"){
+        //FACCOORD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
             req.body.description == undefined ||
@@ -221,7 +222,8 @@ module.exports = {
         //REGHEAD Access
         //DEPTHEAD Access
         //STDCOORD Access
-        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD"){
+        //FACCOORD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
         if(req.authorization_tier == "ADMIN"){
         var sql_q = "";
         parameters = []
@@ -284,7 +286,8 @@ module.exports = {
         //EWHEAD Access
         //REGHEAD Access
         //DEPTHEAD Access
-        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD"){
+        //FACCOORD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
 
         if(req.params.eventId == undefined)
 
@@ -331,7 +334,8 @@ module.exports = {
         //EWHEAD Access
         //DEPTHEAD Access
         //STDCOORD Access
-        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD"){
+        //FACCOORD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
             req.body.description == undefined ||

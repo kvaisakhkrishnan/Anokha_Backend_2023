@@ -89,9 +89,15 @@ const { param } = require('../routes/userApp');
             res.status(403).send({"error" : "You are blocked from further access"});
         }
 
-        //SUPER Access
-        //ADMIN Access
-        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER"){
+         //SUPER Access
+         //ADMIN Access
+         //EWHEAD Access
+         //REGHEAD Access
+         //DEPTHEAD Access
+         //STDCOORD Access
+         //FACCOORD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
+
 
         if(req.body.userName == undefined)
         {
@@ -151,19 +157,59 @@ const { param } = require('../routes/userApp');
          //REGHEAD Access
          //DEPTHEAD Access
          //STDCOORD Access
-         else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD"){
+         //FACCOORD Access
+         else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
        
         var sql_q = "";
         parameters = []
         
-        if(req.body.eventDate == undefined && req.body.userName != undefined)
+        if(req.body.eventDate == undefined && req.body.userName != undefined && (req.body.authorization_tier == ""))
         {
-            sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?)`;
-            parameters = [req.body.userName]
+            
+            if(req.body.authorization_tier == "FACCOORD")
+            {
+                sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?)`;
+                parameters = [req.body.userName]
+            }
+            else if(req.body.authorization_tier == "STDCOORD")
+            {
+                sql_q = `select * from EventData where eventId = (select eventId from StudentCoordinator left join eventManager on eventManager.student = StudentCoordinator.userEmail where userName = ?)`;
+                parameters = [req.body.userName]
+            }
+            else if(req.body.authorization_tier == "DEPTHEAD")
+            {
+                sql_q = `select * from EventData where departmentAbbr = (select * from eventManager where userName = ?)`;
+                parameters = [req.body.userName]
+            }
+            else{
+                sql_q = `select * from EventData`;
+                parameters = []
+            }
+            
         }
         else if (req.body.userName != undefined){
-            sql_q = `select * from EventData where userName = (select userEmail from eventManager where userName = ?) and date = ?`;
-            parameters = [req.body.userName,req.body.eventDate]
+
+            if(req.body.authorization_tier == "FACCOORD")
+            {
+                sql_q = `select * from EventData where userEmail = (select userEmail from eventManager where userName = ?) and date = ?`;
+                parameters = [req.body.userName,req.body.eventDate]
+            }
+            else if(req.body.authorization_tier == "STDCOORD")
+            {
+                sql_q = `select * from EventData where eventId = (select eventId from StudentCoordinator left join eventManager on eventManager.student = StudentCoordinator.userEmail where userName = ?) and date = ?`;
+                parameters = [req.body.userName,req.body.eventDate]
+            }
+            else if(req.body.authorization_tier == "DEPTHEAD")
+            {
+                sql_q = `select * from EventData where departmentAbbr = (select * from eventManager where userName = ?) and date = ?`;
+                parameters = [req.body.userName,req.body.eventDate]
+            }
+            else{
+                sql_q = `select * from EventData and date = ?`;
+                parameters = [req.body.eventDate]
+            }
+
+           
         }
         else{
             res.status(400).send({error : "We are one step ahead! Try harder!"});
@@ -171,7 +217,7 @@ const { param } = require('../routes/userApp');
        
         const db_connection = await db.promise().getConnection();
         try{
-            await db_connection.query("lock tables eventdata read, eventManager read");
+            await db_connection.query("lock tables eventdata read, eventManager read, StudentCoordinator read");
             const [result] = await db_connection.query(sql_q, parameters);
             await db_connection.query("unlock tables");
             if(result.length == 0)
@@ -216,7 +262,8 @@ const { param } = require('../routes/userApp');
         //ADMIN Access
         //EWHEAD Access
         //DEPTHEAD Access
-        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD"){
+        //FACCOORD Access
+        else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
             
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
@@ -365,7 +412,8 @@ const { param } = require('../routes/userApp');
         //EWHEAD Access
         //REGHEAD Access
         //DEPTHEAD Access
-        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"  || req.body.authorization_tier == "EWHEAD"  || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD"){
+        //FACCOORD Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN"  || req.body.authorization_tier == "EWHEAD"  || req.body.authorization_tier == "REGHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "FACCOORD"){
 
         if(req.params.eventId == undefined)
 
@@ -416,7 +464,8 @@ const { param } = require('../routes/userApp');
         //EWHEAD Access
         //DEPTHEAD Access
         //STDCOORD Access
-        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD"){
+        //FACCOOD Access
+        else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" || req.body.authorization_tier == "STDCOORD" || req.body.authorization_tier == "FACCOORD"){
         if(req.body.eventName == undefined ||
             req.body.eventOrWorkshop == undefined ||
             req.body.description == undefined ||
@@ -872,7 +921,8 @@ deleteEvent : [tokenValidator, async(req, res) => {
     //SUPER Access
     //EWHEAD Access
     //DEPTHEAD Access
-    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD"){
+    //FACCOORD Access
+    else if(req.body.authorization_tier == "SUPER" || req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "EWHEAD" || req.body.authorization_tier == "DEPTHEAD" ){
     if(req.body.eventId == undefined ||
         req.body.userEmail == undefined ||
         !validator.isEmail(req.body.userEmail))
