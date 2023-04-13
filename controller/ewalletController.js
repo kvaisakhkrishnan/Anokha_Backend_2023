@@ -24,6 +24,7 @@ module.exports = {
 });
 
  otp = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+ console.log(otp);
 const data = fs.readFileSync('htmlDocuments/otpVerification.html').toString();
 const finaldata = data.replace('%= name %', "Student").replace('%= otp %', otp);
 
