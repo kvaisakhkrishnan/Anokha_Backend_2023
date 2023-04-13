@@ -46,7 +46,7 @@ var mailOptions = {
   
     transporter.sendMail(mailOptions, function(error, info){});
 
-    res.send("Otp sent for verification");
+    res.send("Otp sent for verification ");
     },
 
     startPayment : async (req,res) => {
@@ -57,7 +57,7 @@ var mailOptions = {
 
         else {
         var vendor_token;
-axios.post("https://amritawallet.cb.amrita.edu/api/auth/login", {
+axios.post("https://amritawallet.cb.amrita.edu/api/auth/login", {   
     username: config.ewallet_username,
     password: config.password
     }
