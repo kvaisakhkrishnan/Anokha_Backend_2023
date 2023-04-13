@@ -716,7 +716,7 @@ module.exports = {
                 else{
                         txid = "ANOKHA2023" + new Date().getTime();
                         amount = 500;
-                        const key = "Pz9v2c";
+                        const key = "ypfBaj";
                         const salt = "TbxC2ph02lBUbVYwx0fIB50CvqL27pHo";
                         productinfo = "PASSPORT";
                         const firstName = req.body.firstName;
