@@ -584,7 +584,7 @@ module.exports = {
         else if(req.body.authorization_tier == "ADMIN" || req.body.authorization_tier == "SUPER"){
             let db_connection = await db.promise().getConnection();
             try{
-                await db_connection.query('lock tables eventdata');
+                await db_connection.query('lock tables eventdata read');
                 const [result] = await db_connection.query(`select * from EventData where departmentAbbr = ?`,[req.params.dept]);
                 await db_connection.query('unlock tables');
                 res.status(200).send(result);
