@@ -7,13 +7,13 @@ const mailer = require('nodemailer');
 
 const fs = require('fs');
 const config = require("../config.js.example");
+const ewalletTokenGenerator = require("../middleware/ewalletTokenGenerator");
+const ewalletTokenValidator = require("../middleware/ewalletTokenValidator");
 
-
-
-var otp;
+var otp = {};
 module.exports = {
 
-
+    
     verifyOtp : async (req,res) => {
           var transporter = mailer.createTransport({
     service: 'hotmail',
@@ -23,10 +23,17 @@ module.exports = {
     }
 });
 
- otp = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
- console.log(otp);
+ otp[req.body.userEmail] = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+
+ const token = await ewalletTokenGenerator({
+    userEmail : req.body.userEmail,
+    otp : otp[req.body.userEmail]
+});
+
+
+ console.log(otp[req.body.userEmail]);
 const data = fs.readFileSync('htmlDocuments/otpVerification.html').toString();
-const finaldata = data.replace('%= name %', "Student").replace('%= otp %', otp);
+const finaldata = data.replace('%= name %', "Student").replace('%= otp %', otp[req.body.userEmail]);
 
 
 
@@ -46,12 +53,14 @@ var mailOptions = {
   
     transporter.sendMail(mailOptions, function(error, info){});
 
-    res.send("Otp sent for verification ");
+    res.json({
+        "otpToken":token
+    });
     },
 
-    startPayment : async (req,res) => {
+    startPayment : [ewalletTokenValidator,async (req,res) => {
         
-        if(req.body.user_otp != otp) {
+        if(req.body.user_otp != otp[req.body.userEmail]) {
             res.send("Error : Invalid OTP")
         }
 
@@ -85,7 +94,7 @@ axios.post("https://amritawallet.cb.amrita.edu/api/v2/card/transfer",{
 
 
         }
-    }
+    }]
 }
 
 
