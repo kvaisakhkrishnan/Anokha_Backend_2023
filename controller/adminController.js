@@ -45,7 +45,7 @@ const { param } = require('../routes/userApp');
                     const password = Math.random().toString(36).slice(2) + Math.random().toString(36).toUpperCase().slice(2);
                     if(req.body.role == "ADMIN")
                     {
-                        const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'ADMIN', null]);
+                        const [result] = await db_connection.query("insert into eventManager (userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'ADMIN', null]);
                         await db_connection.query("unlock tables");
                         if(result.affectedRows == 0)
                         {
@@ -58,7 +58,7 @@ const { param } = require('../routes/userApp');
                     }
                     else if(req.body.role == "EWHEAD")
                     {
-                        const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'EWHEAD', null]);
+                        const [result] = await db_connection.query("insert into eventManager (userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'EWHEAD', null]);
                         await db_connection.query("unlock tables");
                         if(result.affectedRows == 0)
                         {
@@ -73,7 +73,7 @@ const { param } = require('../routes/userApp');
                     {
                         if(req.body.departmentAbbr != undefined)
                         {
-                            const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'DEPTHEAD', req.body.departmentAbbr]);
+                            const [result] = await db_connection.query("insert into eventManager (userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'DEPTHEAD', req.body.departmentAbbr]);
                             await db_connection.query("unlock tables");
                             if(result.affectedRows == 0)
                         {
@@ -93,7 +93,7 @@ const { param } = require('../routes/userApp');
                     {
                         if(req.body.departmentAbbr != undefined)
                         {
-                            const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'FACCOORD', req.body.departmentAbbr]);
+                            const [result] = await db_connection.query("insert into eventManager (userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'FACCOORD', req.body.departmentAbbr]);
                             await db_connection.query("unlock tables");
                             if(result.affectedRows == 0)
                         {
@@ -112,7 +112,7 @@ const { param } = require('../routes/userApp');
                     {
                         if(req.body.departmentAbbr != undefined && req.body.facUserEmail != undefined && validator.isEmail(req.body.facUserEmail) && req.body.eventId != undefined)
                         {
-                            const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'STDCOORD', req.body.departmentAbbr]);
+                            const [result] = await db_connection.query("insert into eventManager (userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'STDCOORD', req.body.departmentAbbr]);
                             await db_connection.query("unlock tables");
                             if(result.affectedRows == 1)
                             {
@@ -139,7 +139,7 @@ const { param } = require('../routes/userApp');
                     }
                     else if(req.body.role == "SECURITY")
                     {
-                        const [result] = await db_connection.query("insert into eventManager values(userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'SECURITY', null]);
+                        const [result] = await db_connection.query("insert into eventManager (userName, userEmail, name, password, timeStamp, phoneNumber, role, departmentAbbr) values (?,?,?,?,?,?,?,?)", [userName, req.body.userEmail, req.body.name, password,istTime, req.body.phoneNumber, 'SECURITY', null]);
                         await db_connection.query("unlock tables");
                         if(result.affectedRows == 0)
                         {

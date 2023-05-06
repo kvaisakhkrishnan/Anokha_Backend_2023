@@ -5,7 +5,7 @@ const otpMailer = (fullName, userEmail, otp) => {
     service: 'hotmail',
     auth: {
         user: 'anokha@cb.amrita.edu',
-        pass: '@u97*j3P^RG49V'
+        pass: ''
     }
 });
 
